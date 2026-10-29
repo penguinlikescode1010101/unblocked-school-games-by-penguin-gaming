@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>School Tips &amp; Info</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E📚%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg:#070b14; --panel:rgba(18,24,38,.72); --fg:#eaf0ff; --muted:#8f9bb8; --line:rgba(255,255,255,.09);
+    --accent:#5b9dff; --accent2:#8b5cf6; --grad:linear-gradient(135deg,var(--accent),var(--accent2));
+    --glow:color-mix(in srgb,var(--accent) 38%,transparent);
+  }
+  * { box-sizing:border-box; }
+  html, body { height:100%; }
+  body { margin:0; font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background:var(--bg); color:var(--fg); height:100vh; display:flex; flex-direction:column; overflow:hidden; position:relative; }
+  ::selection { background:var(--accent); color:#fff; }
+  *::-webkit-scrollbar { width:10px; height:10px; }
+  *::-webkit-scrollbar-thumb { background:rgba(255,255,255,.14); border-radius:10px; border:2px solid transparent; background-clip:padding-box; }
+  *::-webkit-scrollbar-thumb:hover { background:rgba(255,255,255,.26); background-clip:padding-box; }
+
+  /* Animated background */
+  .bg { position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+  .bg i { position:absolute; width:46vmax; height:46vmax; border-radius:50%; filter:blur(95px); opacity:.34; animation:drift 26s ease-in-out infinite alternate; }
+  .bg i:nth-child(1) { background:var(--accent); top:-18vmax; left:-12vmax; }
+  .bg i:nth-child(2) { background:var(--accent2); bottom:-20vmax; right:-12vmax; animation-duration:32s; animation-delay:-8s; }
+  .bg i:nth-child(3) { background:#22d3ee; top:30%; left:40%; width:30vmax; height:30vmax; opacity:.16; animation-duration:38s; animation-delay:-14s; }
+  .nobg .bg { display:none; }
+  @keyframes drift { from { transform:translate(0,0) scale(1); } to { transform:translate(9vmax,6vmax) scale(1.18); } }
+
+  /* Loading bar + toast */
+  #loadbar { position:fixed; top:0; left:0; height:3px; width:0; background:var(--grad); z-index:200; box-shadow:0 0 12px var(--glow); }
+  #toast { position:fixed; bottom:24px; left:50%; transform:translate(-50%,20px); opacity:0; background:rgba(20,26,40,.94); border:1px solid var(--line); padding:10px 20px; border-radius:999px; z-index:150; pointer-events:none; transition:opacity .25s, transform .25s; backdrop-filter:blur(12px); font-size:14px; box-shadow:0 10px 30px rgba(0,0,0,.4); }
+  #toast.show { opacity:1; transform:translate(-50%,0); }
+
+  /* Header */
+  header { position:relative; z-index:10; display:flex; gap:10px; align-items:center; flex-wrap:wrap; padding:10px 14px; background:var(--panel); backdrop-filter:blur(20px) saturate(1.5); border-bottom:1px solid var(--line); }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:800; font-size:17px; letter-spacing:.2px; margin-right:2px; }
+  .logo { width:34px; height:34px; border-radius:11px; background:var(--grad); display:grid; place-items:center; font-size:18px; box-shadow:0 4px 18px var(--glow); }
+  .seg { display:flex; padding:3px; gap:2px; background:rgba(255,255,255,.05); border:1px solid var(--line); border-radius:13px; }
+
+  button { font:inherit; font-weight:600; font-size:14px; cursor:pointer; border:0; border-radius:10px; padding:9px 16px; color:#fff; background:var(--grad); box-shadow:0 4px 14px var(--glow); transition:transform .12s, box-shadow .2s, filter .2s, background .2s, border-color .2s; }
+  button:hover { filter:brightness(1.12); }
+  button:active { transform:scale(.95); }
+  button:focus-visible, input:focus-visible, select:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+  button.secondary { background:rgba(255,255,255,.08); color:var(--fg); box-shadow:none; border:1px solid var(--line); }
+  button.secondary:hover { background:rgba(255,255,255,.15); filter:none; }
+  .ibtn { width:38px; height:38px; padding:0; display:grid; place-items:center; font-size:17px; border-radius:11px; }
+
+  .tab { background:transparent; color:var(--muted); box-shadow:none; padding:8px 14px; border-radius:10px; font-size:13.5px; }
+  .tab:hover { color:var(--fg); background:rgba(255,255,255,.08); filter:none; }
+  .tab.active { background:var(--grad); color:#fff; box-shadow:0 4px 14px var(--glow); }
+  .tab.folder { color:var(--fg); }
+
+  form { display:flex; flex:1; gap:6px; min-width:280px; align-items:center; }
+  .addr { flex:1; display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.06); border:1px solid var(--line); border-radius:999px; padding:0 4px 0 14px; transition:border-color .2s, box-shadow .2s, background .2s; min-width:0; }
+  .addr:focus-within { border-color:var(--accent); box-shadow:0 0 0 3px var(--glow); background:rgba(255,255,255,.09); }
+  .addr .lock { font-size:13px; opacity:.7; }
+  .addr input[type=text] { flex:1; min-width:0; background:transparent; border:0; outline:0; box-shadow:none; color:var(--fg); padding:10px 4px; font-size:15px; }
+  .addr .go { border-radius:999px; padding:8px 18px; }
+
+  input[type=text], input[type=number], input[type=date], select, textarea { background:rgba(255,255,255,.06); border:1px solid var(--line); color:var(--fg); border-radius:10px; padding:9px 12px; font:inherit; font-size:14px; outline:none; transition:border-color .2s, box-shadow .2s; }
+  input[type=text]:focus, input[type=number]:focus, input[type=date]:focus, select:focus, textarea:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--glow); }
+  select option { background:#121826; color:var(--fg); }
+  input[type=checkbox], input[type=range] { accent-color:var(--accent); }
+  input[type=checkbox] { width:17px; height:17px; }
+  label { display:inline-flex; align-items:center; gap:8px; cursor:pointer; }
+
+  #soundBtn { margin-left:auto; }
+  .status { display:flex; align-items:center; gap:8px; padding:7px 14px; border-radius:999px; background:rgba(255,255,255,.05); border:1px solid var(--line); font-size:13px; font-weight:700; white-space:nowrap; }
+  .dot { width:9px; height:9px; border-radius:50%; background:var(--muted); }
+  .status.online .dot { background:#3ddc84; box-shadow:0 0 8px #3ddc84; animation:pulse 2s infinite; }
+  .status.offline .dot { background:#ff5c6c; box-shadow:0 0 8px #ff5c6c; }
+  .status.online { color:#3ddc84; }
+  .status.offline { color:#ff5c6c; }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.4; } }
+
+  /* Panes */
+  .pane { flex:1; display:none; min-height:0; position:relative; z-index:1; }
+  .pane.active { display:flex; flex-direction:column; animation:fade .3s ease; }
+  @keyframes fade { from { opacity:0; } to { opacity:1; } }
+  iframe { flex:1; border:0; width:100%; background:#fff; }
+  #view { display:none; }
+
+  /* Home */
+  #home { flex:1; overflow:auto; display:flex; align-items:center; justify-content:center; padding:28px 20px; text-align:center; }
+  .hero { max-width:780px; width:100%; animation:rise .6s ease both; }
+  .hero-badge { display:inline-block; padding:6px 14px; border-radius:999px; background:rgba(255,255,255,.07); border:1px solid var(--line); font-size:13px; color:var(--muted); margin-bottom:18px; }
+  .hero h2 { margin:0; font-size:clamp(28px,5vw,48px); line-height:1.12; letter-spacing:-.5px; }
+  .grad { background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero p { color:var(--muted); font-size:16px; margin:14px 0 0; }
+  .launch { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:14px; margin:30px 0 26px; }
+  .card { display:flex; flex-direction:column; align-items:center; gap:6px; padding:24px 14px; background:var(--panel); border:1px solid var(--line); border-radius:20px; color:var(--fg); box-shadow:none; backdrop-filter:blur(10px); transition:transform .22s, border-color .22s, box-shadow .22s; }
+  .card:hover { transform:translateY(-5px); border-color:var(--accent); box-shadow:0 14px 34px var(--glow); filter:none; }
+  .card span { font-size:36px; transition:transform .25s; }
+  .card:hover span { transform:scale(1.18) rotate(-6deg); }
+  .card b { font-size:16px; }
+  .card small { color:var(--muted); font-weight:500; font-size:13px; }
+  .hero .label { text-transform:uppercase; letter-spacing:1.5px; font-size:11px; margin-bottom:10px; }
+  .featured { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+  .fcard { display:inline-flex; align-items:center; gap:8px; padding:9px 15px; background:rgba(255,255,255,.06); border:1px solid var(--line); color:var(--fg); border-radius:999px; box-shadow:none; font-size:13.5px; }
+  .fcard:hover { border-color:var(--accent); background:rgba(255,255,255,.12); transform:translateY(-2px); filter:none; }
+  @keyframes rise { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:none; } }
+
+  /* HTML runner */
+  #runner { flex-direction:row; }
+  .editor { flex:1; display:flex; flex-direction:column; min-width:0; border-right:1px solid var(--line); }
+  .toolbar { display:flex; gap:8px; padding:9px 12px; background:var(--panel); backdrop-filter:blur(14px); align-items:center; flex-wrap:wrap; border-bottom:1px solid var(--line); }
+  .toolbar button { padding:7px 14px; font-size:13px; }
+  .toolbar .spacer { flex:1; }
+  textarea { flex:1; width:100%; resize:none; padding:14px; background:rgba(0,0,0,.35); border:0; border-radius:0; color:var(--fg); font:13px/1.6 ui-monospace, Menlo, Consolas, monospace; tab-size:2; }
+  textarea:focus { box-shadow:none; }
+  .output { flex:1; display:flex; flex-direction:column; min-width:0; }
+  .label { font-size:12px; color:var(--muted); }
+
+  /* Folder popup */
+  .overlay { position:fixed; inset:0; background:rgba(3,6,12,.62); backdrop-filter:blur(10px); display:none; align-items:center; justify-content:center; z-index:50; padding:16px; }
+  .overlay.open { display:flex; animation:fade .18s ease; }
+  .modal { background:rgba(16,22,35,.92); border:1px solid var(--line); border-radius:22px; width:min(940px,100%); max-height:88vh; display:flex; flex-direction:column; overflow:hidden; box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.03); }
+  .overlay.open .modal { animation:pop .26s cubic-bezier(.2,.9,.3,1.25); }
+  @keyframes pop { from { opacity:0; transform:scale(.92) translateY(10px); } to { opacity:1; transform:none; } }
+  .mhead { display:flex; gap:10px; align-items:center; padding:14px 16px; border-bottom:1px solid var(--line); }
+  .mhead h2 { margin:0; font-size:17px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .mhead input[type=text] { flex:0 1 210px; border-radius:999px; padding:8px 14px; }
+  .mhead button { padding:8px 14px; }
+  .mbody { padding:16px; overflow:auto; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(138px,1fr)); gap:12px; }
+  .tile { background:rgba(255,255,255,.05); border:1px solid var(--line); color:var(--fg); padding:18px 8px; border-radius:16px; box-shadow:none; font-weight:600; font-size:13.5px; opacity:0; animation:rise .38s ease forwards; transition:transform .18s, border-color .18s, background .18s, box-shadow .18s; }
+  .tile:hover { transform:translateY(-4px) scale(1.03); background:rgba(255,255,255,.1); border-color:var(--accent); box-shadow:0 10px 26px var(--glow); filter:none; }
+  .tile .ic { display:block; font-size:30px; margin-bottom:9px; transition:transform .22s; }
+  .tile:hover .ic { transform:scale(1.22) rotate(-7deg); }
+  .empty { color:var(--muted); padding:28px; text-align:center; }
+  .swatch { width:48px; height:48px; padding:0; border-radius:14px; border:2px solid transparent; box-shadow:none; }
+  .swatch.sel { border-color:#fff; box-shadow:0 0 0 3px var(--glow); }
+
+  /* Tools */
+  .tool h3 { margin:16px 0 8px; font-size:12px; letter-spacing:1.2px; text-transform:uppercase; color:var(--muted); }
+  .tool h3:first-child { margin-top:0; }
+  .tool .wide { width:100%; }
+  .tool .tarea { width:100%; min-height:240px; resize:vertical; border:1px solid var(--line); border-radius:12px; background:rgba(0,0,0,.3); }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:10px 0; }
+  .big { font:700 34px ui-monospace, monospace; margin:6px 0; background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .res { background:rgba(0,0,0,.28); border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin:10px 0; white-space:pre-wrap; word-break:break-word; font:14px/1.6 ui-monospace, monospace; }
+  .cdisp { width:100%; text-align:right; font-size:28px !important; margin-bottom:12px; padding:14px 16px !important; border-radius:14px !important; }
+  .ckeys { display:grid; grid-template-columns:repeat(4,1fr); gap:9px; max-width:360px; }
+  .ckeys button { padding:16px 0; font-size:19px; background:rgba(255,255,255,.08); color:var(--fg); box-shadow:none; border:1px solid var(--line); border-radius:14px; }
+  .ckeys button:hover { background:rgba(255,255,255,.16); filter:none; }
+  .ckeys button.op { background:rgba(255,255,255,.15); }
+  .ckeys button.eq { background:var(--grad); color:#fff; border-color:transparent; box-shadow:0 4px 14px var(--glow); }
+  .todo-item { display:flex; align-items:center; gap:10px; padding:9px 4px; border-bottom:1px solid var(--line); }
+  .todo-item span { flex:1; word-break:break-word; }
+  .todo-item button { padding:5px 10px; }
+  .todo-item.done span { text-decoration:line-through; color:var(--muted); }
+
+  /* ===== School Tips cover page (shown until the code is entered) ===== */
+  #cover { display:none; position:fixed; inset:0; z-index:120; overflow:auto; background:#f6f8fc; color:#1d2433; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; }
+  body.locked #cover { display:block; }
+  body.locked header, body.locked .pane, body.locked .bg, body.locked .overlay, body.locked .edge { display:none !important; }
+  #cover a { color:inherit; text-decoration:none; }
+  .c-nav { position:sticky; top:0; z-index:5; display:flex; align-items:center; gap:16px; flex-wrap:wrap; padding:14px 5vw; background:rgba(255,255,255,.92); backdrop-filter:blur(10px); border-bottom:1px solid #e4e9f2; }
+  .c-logo { font-weight:800; font-size:19px; display:flex; gap:8px; align-items:center; }
+  .c-nav nav { display:flex; gap:4px; margin-left:auto; flex-wrap:wrap; }
+  .c-nav nav a { padding:7px 12px; border-radius:8px; color:#4a5670; font-weight:600; font-size:14px; }
+  .c-nav nav a:hover { background:#eef2fb; color:#1d2433; }
+  .c-hero { padding:64px 5vw 44px; text-align:center; background:linear-gradient(180deg,#e3ecff,#f6f8fc); }
+  .c-hero h1 { margin:0; font-size:clamp(30px,5vw,52px); letter-spacing:-.6px; line-height:1.1; }
+  .c-hero h1 span { color:#2f6fed; }
+  .c-hero p { color:#53607a; max-width:640px; margin:16px auto 0; font-size:17px; line-height:1.6; }
+  .c-wrap { max-width:1100px; margin:0 auto; padding:34px 5vw 10px; }
+  .c-wrap h2 { font-size:26px; margin:0 0 6px; letter-spacing:-.3px; }
+  .c-sub { color:#66728c; margin:0 0 18px; }
+  .c-chips { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 20px; }
+  #cover .chip { background:#fff; color:#33415c; border:1px solid #d5dcea; box-shadow:none; padding:8px 16px; border-radius:999px; font-size:14px; }
+  #cover .chip:hover { background:#eef2fb; filter:none; }
+  #cover .chip.on { background:#2f6fed; color:#fff; border-color:#2f6fed; }
+  .c-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:16px; }
+  .c-card { background:#fff; border:1px solid #e4e9f2; border-radius:16px; padding:20px; box-shadow:0 2px 10px rgba(30,50,90,.05); transition:transform .2s, box-shadow .2s; }
+  .c-card:hover { transform:translateY(-3px); box-shadow:0 10px 26px rgba(30,50,90,.12); }
+  .c-card .ico { font-size:28px; }
+  .c-card h3 { margin:10px 0 6px; font-size:17px; }
+  .c-card p { margin:0; color:#53607a; line-height:1.55; font-size:14.5px; }
+  .c-tag { display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.8px; color:#2f6fed; background:#eaf0ff; padding:3px 8px; border-radius:6px; margin-top:12px; }
+  .c-two { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px; }
+  .c-big { font:800 46px ui-monospace, monospace; color:#2f6fed; margin:6px 0 10px; }
+  .c-row { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  #cover button.c-btn { background:#2f6fed; color:#fff; box-shadow:none; padding:9px 18px; border-radius:10px; }
+  #cover button.c-btn.alt { background:#eef2fb; color:#33415c; }
+  #cover button.c-btn:hover { filter:brightness(1.08); }
+  #cover input[type=number], #cover select { background:#fff; color:#1d2433; border:1px solid #d5dcea; border-radius:8px; padding:7px 10px; }
+  .g-row { display:flex; gap:8px; margin-bottom:8px; }
+  .g-row select { flex:1; }
+  .g-row input { width:80px; }
+  .c-out { font-weight:800; font-size:20px; color:#2f6fed; margin-top:6px; }
+  .c-table { width:100%; border-collapse:collapse; font-size:15px; }
+  .c-table th, .c-table td { text-align:left; padding:9px 8px; border-bottom:1px solid #eef1f7; }
+  .c-table th { color:#66728c; font-size:12px; text-transform:uppercase; letter-spacing:.8px; }
+  .c-note { color:#7a869e; font-size:13px; margin:10px 0 0; }
+  .c-list label { display:flex; align-items:center; gap:10px; padding:7px 0; font-size:15px; }
+  .c-list input:checked + span { text-decoration:line-through; color:#8a95ab; }
+  #cover details { background:#fff; border:1px solid #e4e9f2; border-radius:12px; padding:14px 18px; margin-bottom:10px; }
+  #cover summary { cursor:pointer; font-weight:700; }
+  #cover details p { color:#53607a; line-height:1.6; margin:10px 0 0; }
+  .c-foot { text-align:center; color:#7a869e; padding:44px 5vw 8px; font-size:14px; }
+  #cover button.c-code { display:block; margin:6px auto 0; background:transparent; color:#000; opacity:.13; border:0; box-shadow:none; font-size:11px; padding:10px 22px; letter-spacing:1.5px; cursor:pointer; transition:opacity .2s; }
+  #cover button.c-code:hover, #cover button.c-code:focus-visible { opacity:.55; filter:none; }
+  #codeBox { display:none; position:fixed; inset:0; z-index:130; align-items:center; justify-content:center; background:rgba(20,30,50,.45); padding:16px; }
+  #codeBox.show { display:flex; }
+  .code-card { background:#fff; border-radius:18px; padding:24px; width:min(320px,100%); text-align:center; box-shadow:0 20px 60px rgba(20,30,50,.35); }
+  .code-title { font-weight:800; font-size:17px; margin-bottom:14px; }
+  #codeIn { width:100%; text-align:center; font-size:28px; letter-spacing:12px; padding:10px; background:#f3f6fc; color:#1d2433; border:1px solid #d5dcea; border-radius:12px; }
+  #codeIn:focus { border-color:#2f6fed; box-shadow:0 0 0 3px rgba(47,111,237,.2); }
+  .code-msg { color:#d64545; min-height:20px; font-size:14px; margin:8px 0; }
+  .code-card.shake { animation:shake .35s; }
+  @keyframes shake { 20%,60% { transform:translateX(-8px); } 40%,80% { transform:translateX(8px); } }
+
+  /* Extensions */
+  .ext-item { display:flex; gap:12px; align-items:center; flex-wrap:wrap; padding:12px; border:1px solid var(--line); border-radius:14px; margin-bottom:10px; background:rgba(255,255,255,.04); }
+  .ext-ic { width:42px; height:42px; border-radius:10px; object-fit:cover; background:rgba(255,255,255,.1); display:grid; place-items:center; font-size:20px; flex:none; }
+  .ext-meta { flex:1; min-width:140px; }
+  .ext-meta b { display:block; }
+  .ext-meta small { color:var(--muted); display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:340px; }
+  .ext-item button { padding:7px 12px; font-size:13px; }
+  .ext-frame { width:min(100%,440px); height:560px; border:1px solid var(--line); border-radius:12px; background:#fff; display:block; margin:0 auto; }
+
+  /* Full screen mode: hide the GUI chrome */
+  .fs header { display:none; }
+  .edge { position:fixed; top:0; bottom:0; width:26px; z-index:90; display:none; touch-action:none; }
+  .edge.l { left:0; }
+  .edge.r { right:0; }
+  .fs .edge { display:block; }
+
+  /* Black screen (safety) */
+  #blackout { position:fixed; inset:0; background:#000; z-index:300; display:none; }
+  #blackout.show { display:block; }
+  #blackClose { position:absolute; top:12px; left:50%; transform:translateX(-50%); background:#1c1c1c; color:#ddd; border:1px solid #333; padding:8px 18px; font-size:15px; box-shadow:none; }
+  #blackClose:hover { background:#2a2a2a; filter:none; }
+
+  @media (max-width: 800px) {
+    #runner { flex-direction:column; }
+    .editor { border-right:0; border-bottom:1px solid var(--line); }
+    .brand span { display:none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+  }
+</style>
+</head>
+<body class="locked">
+<div class="bg"><i></i><i></i><i></i></div>
+<div id="loadbar"></div>
+<div id="toast"></div>
+<div id="extBg" style="display:none"></div>
+<div class="edge l" id="edgeL"></div>
+<div class="edge r" id="edgeR"></div>
+<div id="cover">
+  <div class="c-nav">
+    <div class="c-logo">📚 School Tips &amp; Info</div>
+    <nav>
+      <a href="#tips">Tips</a><a href="#tools">Tools</a><a href="#info">Quick info</a><a href="#faq">FAQ</a>
+    </nav>
+  </div>
+
+  <section class="c-hero">
+    <h1>Make this school year <span>your best yet</span></h1>
+    <p>Simple, practical study tips, time-saving habits, and handy school info, all in one place.</p>
+  </section>
+
+  <section class="c-wrap" id="tips">
+    <h2>Tips for students</h2>
+    <p class="c-sub">Pick a topic to see ideas you can try today.</p>
+    <div class="c-chips" id="cChips">
+      <button class="chip on" data-f="all" type="button">All</button>
+      <button class="chip" data-f="study" type="button">Studying</button>
+      <button class="chip" data-f="time" type="button">Time management</button>
+      <button class="chip" data-f="tests" type="button">Tests</button>
+      <button class="chip" data-f="wellness" type="button">Wellness</button>
+    </div>
+    <div class="c-grid" id="cGrid">
+<div class="c-card" data-cat="study"><div class="ico">📅</div><h3>Space it out</h3><p>Several short sessions across the week beat one long cram. Review new material within a day, then again a few days later.</p><span class="c-tag">Studying</span></div>
+<div class="c-card" data-cat="study"><div class="ico">🧠</div><h3>Quiz yourself</h3><p>Close your notes and try to recall the key ideas before checking. Flashcards and practice questions make memories stick.</p><span class="c-tag">Studying</span></div>
+<div class="c-card" data-cat="study"><div class="ico">🗣️</div><h3>Teach it back</h3><p>Explain a topic out loud like you’re teaching a friend. Any spot where you get stuck shows what to review.</p><span class="c-tag">Studying</span></div>
+<div class="c-card" data-cat="study"><div class="ico">📝</div><h3>Take clear notes</h3><p>Use headings, bullet points and your own words. Add questions in the margin to review later.</p><span class="c-tag">Studying</span></div>
+<div class="c-card" data-cat="time"><div class="ico">📆</div><h3>Use a planner</h3><p>Write down assignments and due dates the day you get them, and check your planner every morning.</p><span class="c-tag">Time management</span></div>
+<div class="c-card" data-cat="time"><div class="ico">🧩</div><h3>Break big projects down</h3><p>Split a project into small steps with their own mini deadlines so it never feels overwhelming.</p><span class="c-tag">Time management</span></div>
+<div class="c-card" data-cat="time"><div class="ico">⏱️</div><h3>Try the Pomodoro method</h3><p>Work for 25 minutes, then rest for 5. After four rounds, take a longer break. Try the timer below.</p><span class="c-tag">Time management</span></div>
+<div class="c-card" data-cat="time"><div class="ico">🐸</div><h3>Hardest task first</h3><p>Start with the assignment you’re dreading while your energy is highest. The rest feels easier.</p><span class="c-tag">Time management</span></div>
+<div class="c-card" data-cat="tests"><div class="ico">🗓️</div><h3>Start a week early</h3><p>List every topic on the test and spread them across several days so you’re not rushing the night before.</p><span class="c-tag">Tests</span></div>
+<div class="c-card" data-cat="tests"><div class="ico">👀</div><h3>Read directions first</h3><p>Skim the whole test, answer the easy questions first, and keep an eye on the clock.</p><span class="c-tag">Tests</span></div>
+<div class="c-card" data-cat="tests"><div class="ico">✅</div><h3>Check your work</h3><p>Save a few minutes at the end to review your answers and catch small mistakes.</p><span class="c-tag">Tests</span></div>
+<div class="c-card" data-cat="tests"><div class="ico">🥣</div><h3>Fuel up</h3><p>A good night’s sleep and a real breakfast help your memory and focus more than a late-night cram.</p><span class="c-tag">Tests</span></div>
+<div class="c-card" data-cat="wellness"><div class="ico">😴</div><h3>Get enough sleep</h3><p>Most teens do best with about 8 to 10 hours a night. Sleep is when your brain stores what you learned.</p><span class="c-tag">Wellness</span></div>
+<div class="c-card" data-cat="wellness"><div class="ico">🚶</div><h3>Move a little</h3><p>A short walk or some stretching between study blocks helps you focus.</p><span class="c-tag">Wellness</span></div>
+<div class="c-card" data-cat="wellness"><div class="ico">💬</div><h3>Ask for help</h3><p>If school feels overwhelming, talk to a teacher, counselor, parent or friend. Asking for help is a smart move.</p><span class="c-tag">Wellness</span></div>
+<div class="c-card" data-cat="wellness"><div class="ico">📵</div><h3>Take screen breaks</h3><p>Put your phone away while studying, and take a few minutes off screens to reset your eyes and mind.</p><span class="c-tag">Wellness</span></div>
+    </div>
+  </section>
+
+  <section class="c-wrap" id="tools">
+    <h2>Handy tools</h2>
+    <p class="c-sub">A study timer and a quick GPA calculator.</p>
+    <div class="c-two">
+      <div class="c-card">
+        <h3>⏱️ Study timer</h3>
+        <div class="c-note" id="pMode">Focus time</div>
+        <div class="c-big" id="pDisp">25:00</div>
+        <div class="c-row"><button class="c-btn" id="pGo" type="button">Start</button><button class="c-btn alt" id="pReset" type="button">Reset</button></div>
+        <p class="c-note">25 minutes of focus, then a 5 minute break.</p>
+      </div>
+      <div class="c-card">
+        <h3>🎓 GPA calculator</h3>
+        <div id="gRows"></div>
+        <div class="c-out" id="gOut">Pick your grades to see your GPA</div>
+        <p class="c-note">Unweighted 4.0 scale. Credits are how much each class counts.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="c-wrap" id="info">
+    <h2>Quick school info</h2>
+    <p class="c-sub">Good things to have on hand.</p>
+    <div class="c-two">
+      <div class="c-card">
+        <h3>📊 Common grading scale</h3>
+        <table class="c-table">
+          <tr><th>Letter</th><th>Percent</th><th>GPA points</th></tr>
+          <tr><td>A</td><td>90 to 100</td><td>4.0</td></tr>
+          <tr><td>B</td><td>80 to 89</td><td>3.0</td></tr>
+          <tr><td>C</td><td>70 to 79</td><td>2.0</td></tr>
+          <tr><td>D</td><td>60 to 69</td><td>1.0</td></tr>
+          <tr><td>F</td><td>Below 60</td><td>0.0</td></tr>
+        </table>
+        <p class="c-note">Scales vary by school, so check your student handbook.</p>
+      </div>
+      <div class="c-card c-list">
+        <h3>🎒 Back-to-school checklist</h3>
+        <label><input type="checkbox"><span>Backpack and school supplies</span></label><label><input type="checkbox"><span>Planner or calendar app</span></label><label><input type="checkbox"><span>Water bottle</span></label><label><input type="checkbox"><span>Charged device and charger</span></label><label><input type="checkbox"><span>Lunch or lunch money</span></label><label><input type="checkbox"><span>Class schedule and locker info</span></label><label><input type="checkbox"><span>Contact info for your teachers</span></label><label><input type="checkbox"><span>Student ID</span></label>
+      </div>
+    </div>
+  </section>
+
+  <section class="c-wrap" id="faq">
+    <h2>Frequently asked questions</h2>
+    <p class="c-sub">Quick answers to common student questions.</p>
+    <details><summary>How long should I study each night?</summary><p>A common rule of thumb is about 10 minutes per grade level, so a 9th grader might spend around 90 minutes. Focused time matters more than long hours, so remove distractions and take short breaks.</p></details>
+    <details><summary>What if I’m falling behind in a class?</summary><p>Talk to your teacher early. Ask what to focus on first, make a small catch-up plan, and look into tutoring or extra help. Tackling one subject at a time keeps it manageable.</p></details>
+    <details><summary>How do I stay focused on homework?</summary><p>Pick one task, silence notifications, set a timer, and keep water and a snack nearby. Starting with the hardest assignment helps while your energy is high.</p></details>
+    <details><summary>How should I get ready for a big exam?</summary><p>Make a study plan a week ahead, practice with old quizzes or sample questions, get a full night’s sleep, and eat breakfast the morning of the test.</p></details>
+    <details><summary>How can I get more involved at school?</summary><p>Try a club, sport, or activity that matches your interests. It’s a great way to meet people and build skills outside of class.</p></details>
+  </section>
+
+  <footer class="c-foot">
+    <div>© School Tips &amp; Info · Helpful advice for students</div>
+    <button class="c-code" id="codeBtn" type="button" aria-label="Enter code">code</button>
+  </footer>
+
+  <div id="codeBox">
+    <div class="code-card" id="codeCard">
+      <div class="code-title">Enter access code</div>
+      <input id="codeIn" type="password" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••">
+      <div class="code-msg" id="codeMsg"></div>
+      <button class="c-btn alt" id="codeCancel" type="button">Cancel</button>
+    </div>
+  </div>
+</div>
+<header>
+  <div class="brand"><div class="logo">🌐</div><span>Proxy</span></div>
+  <div class="seg">
+    <button class="tab active" data-tab="browse" type="button">🧭 Browse</button>
+    <button class="tab" data-tab="runner" type="button">⚡ Run HTML</button>
+  </div>
+  <div class="seg">
+    <button class="tab folder" data-folder="Games" type="button">🎮 Games</button>
+    <button class="tab folder" data-folder="Streaming" type="button">📺 Streaming</button>
+    <button class="tab folder" data-folder="Tools" type="button">🧰 Tools</button>
+  </div>
+  <form id="f">
+    <button class="ibtn secondary" id="nBack" type="button" title="Back">‹</button>
+    <button class="ibtn secondary" id="nFwd" type="button" title="Forward">›</button>
+    <button class="ibtn secondary" id="nReload" type="button" title="Reload">⟳</button>
+    <button class="ibtn secondary" id="nHome" type="button" title="Home">⌂</button>
+    <div class="addr"><span class="lock">🔒</span><input id="u" type="text" placeholder="Search or enter a web address" autocomplete="off" autofocus><button class="go" type="submit">Go</button></div>
+  </form>
+  <button class="ibtn secondary" id="soundBtn" title="Sound effects" type="button">🔊</button>
+  <div class="status" id="status" title="Connection status"><span class="dot"></span><span id="statusText">Checking...</span></div>
+  <button class="ibtn secondary" id="extBtn" title="Extensions" type="button">🧩</button>
+  <button class="ibtn secondary" id="lockBtn" title="Lock (back to School Tips)" type="button">🔒</button>
+  <button class="ibtn secondary" id="fsBtn" title="Full screen" type="button">⛶</button>
+  <button class="ibtn secondary" id="settingsBtn" title="Settings" type="button">⚙️</button>
+</header>
+
+<!-- Browse tab -->
+<div class="pane active" id="browse">
+  <div id="home">
+    <div class="hero">
+      <div class="hero-badge">✨ Your personal launchpad</div>
+      <h2>Browse, play &amp; stream<br><span class="grad">all in one place</span></h2>
+      <p>Type an address above, or jump into a folder.</p>
+      <div class="launch">
+        <button class="card" data-folder="Games" type="button"><span>🎮</span><b>Games</b><small id="cGames"></small></button>
+        <button class="card" data-folder="Streaming" type="button"><span>📺</span><b>Streaming</b><small id="cStream"></small></button>
+        <button class="card" data-folder="Tools" type="button"><span>🧰</span><b>Tools</b><small id="cTools"></small></button>
+        <button class="card" id="cExt" type="button"><span>🧩</span><b>Extensions</b><small>Load Chrome extensions</small></button>
+        <button class="card" id="cRun" type="button"><span>⚡</span><b>Run HTML</b><small>Code playground</small></button>
+      </div>
+      <div class="label">Popular</div>
+      <div class="featured" id="featured"></div>
+    </div>
+  </div>
+  <iframe id="view" sandbox="allow-scripts allow-forms allow-same-origin allow-popups"></iframe>
+</div>
+
+<!-- Run HTML tab -->
+<div class="pane" id="runner">
+  <div class="editor">
+    <div class="toolbar">
+      <button id="run" type="button">▶ Run</button>
+      <button id="open" class="secondary" type="button">Open .html file</button>
+      <button id="save" class="secondary" type="button">Save</button>
+      <button id="clear" class="secondary" type="button">Clear</button>
+      <span class="spacer"></span>
+      <span class="label">Ctrl/Cmd + Enter to run</span>
+      <input id="file" type="file" accept=".html,.htm,text/html" hidden>
+    </div>
+    <textarea id="code" spellcheck="false" placeholder="Paste or write HTML here, or open an .html file..."></textarea>
+  </div>
+  <div class="output">
+    <div class="toolbar"><span class="label">Output</span></div>
+    <iframe id="out" sandbox="allow-scripts allow-forms allow-popups allow-modals"></iframe>
+  </div>
+</div>
+
+<!-- Black screen (safety) -->
+<div id="blackout"><button id="blackClose" type="button">✕ Close</button></div>
+
+<!-- Folder popup -->
+<div class="overlay" id="overlay">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="mhead">
+      <button class="secondary" id="mBack" type="button" style="display:none">← Back</button>
+      <h2 id="mTitle"></h2>
+      <input id="mSearch" type="text" placeholder="Search..." autocomplete="off">
+      <button class="secondary" id="mClose" type="button">✕</button>
+    </div>
+    <div class="mbody" id="mBody"></div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const f = $('f'), u = $('u'), view = $('view'), home = $('home');
+const code = $('code'), out = $('out'), fileInput = $('file');
+
+// ================= Tabs =================
+function showTab(name) {
+  document.querySelectorAll('.tab[data-tab]').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  document.querySelectorAll('.pane').forEach(p => p.classList.toggle('active', p.id === name));
+  f.style.display = name === 'browse' ? 'flex' : 'none';
+}
+document.querySelectorAll('.tab[data-tab]').forEach(t => t.addEventListener('click', () => showTab(t.dataset.tab)));
+
+// ================= Proxy browsing =================
+function normalize(v) {
+  v = v.trim();
+  if (!v) return '';
+  if (/^https?:\/\//i.test(v)) return v;
+  if (/\s/.test(v) || !v.includes('.')) return 'https://duckduckgo.com/html/?q=' + encodeURIComponent(v);
+  return 'https://' + v;
+}
+function go(url) {
+  if (!url) return;
+  showTab('browse');
+  u.value = url;
+  home.style.display = 'none';
+  view.style.display = 'block';
+  startLoad();
+  toast('Opening ' + hostOf(url));
+  view.src = '/proxy?url=' + encodeURIComponent(url);
+}
+f.addEventListener('submit', e => { e.preventDefault(); go(normalize(u.value)); });
+view.addEventListener('load', () => {
+  try {
+    const real = new URL(view.contentWindow.location.href).searchParams.get('url');
+    if (real) u.value = real;
+  } catch (_) {}
+  endLoad();
+});
+
+// ================= Online / offline status =================
+const statusEl = $('status'), statusText = $('statusText');
+function setStatus(online) {
+  statusEl.classList.toggle('online', online);
+  statusEl.classList.toggle('offline', !online);
+  statusText.textContent = online ? 'Online' : 'Offline';
+}
+async function checkStatus() {
+  if (!navigator.onLine) return setStatus(false);
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 4000);
+    const r = await fetch('/health', { cache: 'no-store', signal: ctrl.signal });
+    clearTimeout(t);
+    setStatus(r.ok);
+  } catch (_) { setStatus(false); }
+}
+window.addEventListener('online', checkStatus);
+window.addEventListener('offline', () => setStatus(false));
+checkStatus();
+setInterval(checkStatus, 10000);
+
+// ================= Folders (Games / Streaming / Tools) =================
+// Site items: ['Name', 'emoji', 'url']   Tool items: ['Name', 'emoji', function]
+const GAMES = [
+  ['CrazyGames','🎮','https://www.crazygames.com/'],
+  ['Poki','🕹️','https://poki.com/'],
+  ['Miniclip','🎯','https://www.miniclip.com/games/en/'],
+  ['Coolmath Games','🧠','https://www.coolmathgames.com/'],
+  ['Armor Games','🛡️','https://armorgames.com/'],
+  ['Kongregate','🐒','https://www.kongregate.com/'],
+  ['Newgrounds','🔥','https://www.newgrounds.com/games'],
+  ['itch.io','🎲','https://itch.io/games/platform-web'],
+  ['Y8','🎮','https://www.y8.com/'],
+  ['Addicting Games','🎮','https://www.addictinggames.com/'],
+  ['Silvergames','🥈','https://www.silvergames.com/'],
+  ['Kiz10','🎮','https://www.kiz10.com/'],
+  ['Games.com','🎮','https://www.games.com/'],
+  ['GameDistribution','🎮','https://gamedistribution.com/games/'],
+  ['Free Online Games','🎮','https://www.freeonlinegames.com/'],
+  ['Agame','🎮','https://www.agame.com/'],
+  ['Pogo','🃏','https://www.pogo.com/'],
+  ['Arkadium','🧩','https://www.arkadium.com/free-online-games/'],
+  ['Lagged','🎮','https://www.lagged.com/'],
+  ['Game Jolt','⚡','https://gamejolt.com/games'],
+  ['Chess.com','♟️','https://www.chess.com/play'],
+  ['Lichess','♞','https://lichess.org/'],
+  ['Skribbl.io','🖍️','https://skribbl.io/'],
+  ['Agar.io','🟢','https://agar.io/'],
+  ['Slither.io','🐍','https://slither.io/'],
+  ['Krunker','🔫','https://krunker.io/'],
+  ['Shell Shockers','🥚','https://shellshock.io/'],
+  ['Gartic Phone','📞','https://garticphone.com/'],
+  ['Wordle','🔤','https://www.nytimes.com/games/wordle/index.html'],
+  ['2048','🔢','https://play2048.co/'],
+  ['Little Alchemy 2','⚗️','https://littlealchemy2.com/'],
+  ['Cookie Clicker','🍪','https://orteil.dashnet.org/cookieclicker/'],
+  ['Tetris','🧱','https://tetris.com/play-tetris'],
+  ['Sudoku','9️⃣','https://sudoku.com/'],
+  ['Scratch Games','🐱','https://scratch.mit.edu/explore/projects/games/'],
+  ['Roblox','🧊','https://www.roblox.com/'],
+  ['Steam Store','💨','https://store.steampowered.com/'],
+  ['Pokémon Showdown','⚔️','https://play.pokemonshowdown.com/'],
+];
+
+const STREAMING = [
+  ['YouTube','▶️','https://www.youtube.com/'],
+  ['YouTube Music','🎵','https://music.youtube.com/'],
+  ['Netflix','🎬','https://www.netflix.com/'],
+  ['Disney+','🏰','https://www.disneyplus.com/'],
+  ['Hulu','💚','https://www.hulu.com/'],
+  ['Max','📺','https://www.max.com/'],
+  ['Prime Video','📦','https://www.primevideo.com/'],
+  ['Peacock','🦚','https://www.peacocktv.com/'],
+  ['Paramount+','⛰️','https://www.paramountplus.com/'],
+  ['Apple TV+','🍎','https://tv.apple.com/'],
+  ['Twitch','🟣','https://www.twitch.tv/'],
+  ['Kick','🟩','https://kick.com/'],
+  ['Tubi','🆓','https://tubitv.com/'],
+  ['Pluto TV','🪐','https://pluto.tv/'],
+  ['The Roku Channel','📡','https://therokuchannel.roku.com/'],
+  ['Crunchyroll','🍥','https://www.crunchyroll.com/'],
+  ['Vimeo','🎞️','https://vimeo.com/'],
+  ['Dailymotion','📹','https://www.dailymotion.com/'],
+  ['Spotify','🎧','https://open.spotify.com/'],
+  ['Apple Music','🎶','https://music.apple.com/'],
+  ['SoundCloud','☁️','https://soundcloud.com/'],
+  ['Pandora','🎙️','https://www.pandora.com/'],
+  ['Audible','📚','https://www.audible.com/'],
+  ['Plex','🟠','https://www.plex.tv/'],
+];
+
+const TOOLS = [
+  ['Calculator','🧮',toolCalc],
+  ['Unit Converter','📏',toolUnits],
+  ['Stopwatch & Timer','⏱️',toolTime],
+  ['Notes','📝',toolNotes],
+  ['To-Do List','✅',toolTodo],
+  ['Password Generator','🔑',toolPass],
+  ['Word Counter','🔠',toolWords],
+  ['Text Case Converter','🔡',toolCase],
+  ['Color Picker','🎨',toolColor],
+  ['Base64 Encode/Decode','🔐',toolBase64],
+  ['URL Encode/Decode','🔗',toolUrlEnc],
+  ['JSON Formatter','{ }',toolJson],
+  ['Dice & Coin','🎲',toolDice],
+  ['Random Number','🔀',toolRandom],
+  ['Tip Calculator','💵',toolTip],
+  ['Percentage Calculator','％',toolPercent],
+  ['Age Calculator','🎂',toolAge],
+  ['BMI Calculator','⚖️',toolBmi],
+  ['World Clock','🌍',toolClock],
+];
+
+const SETTINGS = [
+  ['Safety','🛡️',toolSafety],
+  ['Sound','🔊',toolSound],
+  ['Appearance','🎨',toolAppearance],
+  ['Extensions','🧩',toolExtensions],
+];
+
+const FOLDERS = {
+  Settings:  { icon:'⚙️', type:'tool', items:SETTINGS },
+  Games:     { icon:'🎮', type:'site', items:GAMES },
+  Streaming: { icon:'📺', type:'site', items:STREAMING },
+  Tools:     { icon:'🧰', type:'tool', items:TOOLS },
+};
+
+const overlay = $('overlay'), mTitle = $('mTitle'), mBody = $('mBody'), mBack = $('mBack'), mSearch = $('mSearch');
+let cleanups = [], currentFolder = null, backAction = null;
+function onClose(fn) { cleanups.push(fn); }
+function runCleanups() { cleanups.forEach(fn => { try { fn(); } catch (_) {} }); cleanups = []; backAction = null; }
+function closeModal() { runCleanups(); overlay.classList.remove('open'); }
+
+function openFolder(name) {
+  runCleanups();
+  currentFolder = name;
+  const many = FOLDERS[name].items.length > 6;
+  mTitle.textContent = FOLDERS[name].icon + ' ' + name + (many ? ' (' + FOLDERS[name].items.length + ')' : '');
+  mBack.style.display = 'none';
+  mSearch.style.display = many ? '' : 'none';
+  mSearch.value = '';
+  renderFolder();
+  overlay.classList.add('open');
+  mSearch.focus();
+}
+function renderFolder() {
+  const F = FOLDERS[currentFolder];
+  const q = mSearch.value.trim().toLowerCase();
+  const items = F.items.filter(i => i[0].toLowerCase().includes(q));
+  mBody.innerHTML = '';
+  if (!items.length) { mBody.innerHTML = '<div class="empty">No matches.</div>'; return; }
+  const grid = document.createElement('div');
+  grid.className = 'grid';
+  items.forEach((item, idx) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'tile';
+    b.style.animationDelay = Math.min(idx * 16, 400) + 'ms';
+    const ic = document.createElement('span');
+    ic.className = 'ic';
+    ic.textContent = item[1];
+    b.append(ic, item[0]);
+    b.addEventListener('click', () => {
+      if (F.type === 'tool') openTool(item);
+      else { closeModal(); go(item[2]); }
+    });
+    grid.appendChild(b);
+  });
+  mBody.appendChild(grid);
+}
+function openTool(item) {
+  runCleanups();
+  mTitle.textContent = item[1] + ' ' + item[0];
+  mBack.style.display = '';
+  mSearch.style.display = 'none';
+  mBody.innerHTML = '<div class="tool"></div>';
+  item[2](mBody.firstChild);
+}
+document.querySelectorAll('[data-folder]').forEach(b => b.addEventListener('click', () => openFolder(b.dataset.folder)));
+mSearch.addEventListener('input', renderFolder);
+mBack.addEventListener('click', () => (backAction ? backAction() : openFolder(currentFolder)));
+$('mClose').addEventListener('click', closeModal);
+overlay.addEventListener('mousedown', e => { if (e.target === overlay) closeModal(); });
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (blackout.classList.contains('show')) { closeBlackout(); return; }
+  if (overlay.classList.contains('open')) { closeModal(); return; }
+  if (document.body.classList.contains('fs')) exitFs();
+});
+$('settingsBtn').addEventListener('click', () => openFolder('Settings'));
+
+// ================= Tool helpers =================
+const q1 = (c, s) => c.querySelector(s);
+const copyText = t => { try { navigator.clipboard.writeText(t); toast('Copied to clipboard'); } catch (_) {} };
+function lsGet(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (_) { return d; } }
+function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (_) {} }
+const pad = n => String(n).padStart(2, '0');
+function beep() {
+  try {
+    const a = new (window.AudioContext || window.webkitAudioContext)();
+    const o = a.createOscillator();
+    o.connect(a.destination); o.frequency.value = 880; o.start();
+    setTimeout(() => { o.stop(); a.close(); }, 700);
+  } catch (_) {}
+}
+
+// ================= Tools =================
+function evalExpr(s) {
+  if (!s) return '';
+  if (!/^[0-9+\-*/().%\s]+$/.test(s)) return 'Error';
+  try {
+    const t = s.replace(/(\d+(?:\.\d+)?)%/g, '($1/100)');
+    const r = Function('"use strict";return (' + t + ')')();
+    if (typeof r !== 'number' || !isFinite(r)) return 'Error';
+    return String(+r.toPrecision(12));
+  } catch (_) { return 'Error'; }
+}
+function toolCalc(c) {
+  c.innerHTML = '<input class="cdisp" type="text" readonly value="0"><div class="ckeys"></div>';
+  const disp = q1(c, '.cdisp'), keys = q1(c, '.ckeys');
+  let ex = '', justEq = false;
+  const show = () => { disp.value = (ex || '0').replace(/\*/g, '×').replace(/\//g, '÷'); };
+  const map = { '÷':'/', '×':'*', '−':'-' };
+  function press(k) {
+    if (ex === 'Error') ex = '';
+    const isEq = k === '=';
+    if (k === 'C') ex = '';
+    else if (k === '⌫') ex = ex.slice(0, -1);
+    else if (isEq) ex = evalExpr(ex);
+    else if (k === '±') { if (ex.startsWith('-')) ex = ex.slice(1); else if (ex) ex = '-' + ex; }
+    else {
+      k = map[k] || k;
+      if (justEq && /[0-9.]/.test(k)) ex = '';
+      ex += k;
+    }
+    justEq = isEq;
+    show();
+  }
+  ['C','⌫','%','÷','7','8','9','×','4','5','6','−','1','2','3','+','±','0','.','='].forEach(k => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = k;
+    if ('÷×−+%'.includes(k) || k === 'C' || k === '⌫') b.className = 'op';
+    if (k === '=') b.className = 'eq';
+    b.addEventListener('click', () => press(k));
+    keys.appendChild(b);
+  });
+  disp.addEventListener('keydown', e => {
+    const m = { Enter:'=', '=':'=', Backspace:'⌫', Escape:'C', '/':'÷', '*':'×', '-':'−' };
+    if (m[e.key]) { e.preventDefault(); if (e.key === 'Escape') { e.stopPropagation(); } press(m[e.key]); }
+    else if (e.key.length === 1 && '0123456789.+()%'.includes(e.key)) { e.preventDefault(); press(e.key); }
+  });
+  disp.focus();
+}
+
+function toolUnits(c) {
+  const U = {
+    Length: { mm:.001, cm:.01, m:1, km:1000, inch:.0254, foot:.3048, yard:.9144, mile:1609.344 },
+    Weight: { g:.001, kg:1, ounce:.028349523, pound:.45359237, ton:1000 },
+    Volume: { ml:.001, liter:1, tsp:.00492892, tbsp:.0147868, cup:.236588, gallon:3.78541 },
+    Speed: { 'm/s':1, 'km/h':.277778, mph:.44704, knot:.514444 },
+    Temperature: { Celsius:1, Fahrenheit:1, Kelvin:1 },
+    Data: { byte:1, KB:1024, MB:1048576, GB:1073741824, TB:1099511627776 },
+  };
+  c.innerHTML = '<div class="row"><select id="cat"></select></div><div class="row"><input id="val" type="number" value="1" style="width:130px"><select id="from"></select> → <select id="to"></select></div><div class="res" id="res"></div>';
+  const cat = q1(c, '#cat'), val = q1(c, '#val'), from = q1(c, '#from'), to = q1(c, '#to'), res = q1(c, '#res');
+  Object.keys(U).forEach(k => cat.add(new Option(k, k)));
+  function fill() {
+    [from, to].forEach(s => { s.innerHTML = ''; Object.keys(U[cat.value]).forEach(k => s.add(new Option(k, k))); });
+    to.selectedIndex = Math.min(1, to.options.length - 1);
+    calc();
+  }
+  function calc() {
+    const x = parseFloat(val.value);
+    if (isNaN(x)) { res.textContent = ''; return; }
+    let r;
+    if (cat.value === 'Temperature') {
+      let cel = from.value === 'Fahrenheit' ? (x - 32) * 5 / 9 : from.value === 'Kelvin' ? x - 273.15 : x;
+      r = to.value === 'Fahrenheit' ? cel * 9 / 5 + 32 : to.value === 'Kelvin' ? cel + 273.15 : cel;
+    } else {
+      r = x * U[cat.value][from.value] / U[cat.value][to.value];
+    }
+    res.textContent = x + ' ' + from.value + ' = ' + +r.toPrecision(10) + ' ' + to.value;
+  }
+  cat.addEventListener('change', fill);
+  [val, from, to].forEach(el => el.addEventListener('input', calc));
+  fill();
+}
+
+function toolTime(c) {
+  c.innerHTML = '<h3>Stopwatch</h3><div class="big" id="sw">00:00.0</div><div class="row"><button id="swGo" type="button">Start</button><button class="secondary" id="swReset" type="button">Reset</button></div>' +
+    '<h3>Countdown timer</h3><div class="row"><input id="tm" type="number" min="0" value="1" style="width:80px"> min <input id="ts" type="number" min="0" value="0" style="width:80px"> sec <button id="tmGo" type="button">Start</button></div><div class="big" id="tmOut">01:00</div>';
+  const sw = q1(c, '#sw'), swGo = q1(c, '#swGo'), tmOut = q1(c, '#tmOut'), tmGo = q1(c, '#tmGo');
+  let acc = 0, t0 = 0, run = false, iv = null, tEnd = 0, iv2 = null;
+  const fmt = ms => { const s = ms / 1000; return pad(Math.floor(s / 60)) + ':' + pad(Math.floor(s % 60)) + '.' + Math.floor((s * 10) % 10); };
+  const tick = () => { sw.textContent = fmt(acc + (run ? Date.now() - t0 : 0)); };
+  swGo.addEventListener('click', () => {
+    if (!run) { run = true; t0 = Date.now(); iv = setInterval(tick, 100); swGo.textContent = 'Stop'; }
+    else { acc += Date.now() - t0; run = false; clearInterval(iv); swGo.textContent = 'Start'; tick(); }
+  });
+  q1(c, '#swReset').addEventListener('click', () => { acc = 0; run = false; clearInterval(iv); swGo.textContent = 'Start'; tick(); });
+  const mmss = ms => pad(Math.floor(ms / 60000)) + ':' + pad(Math.floor(ms / 1000) % 60);
+  tmGo.addEventListener('click', () => {
+    if (iv2) { clearInterval(iv2); iv2 = null; tmGo.textContent = 'Start'; return; }
+    const total = (parseInt(q1(c, '#tm').value) || 0) * 60000 + (parseInt(q1(c, '#ts').value) || 0) * 1000;
+    if (total <= 0) return;
+    tEnd = Date.now() + total; tmGo.textContent = 'Stop';
+    tmOut.textContent = mmss(total);
+    iv2 = setInterval(() => {
+      const left = tEnd - Date.now();
+      if (left <= 0) { clearInterval(iv2); iv2 = null; tmOut.textContent = "Time's up!"; tmGo.textContent = 'Start'; beep(); }
+      else tmOut.textContent = mmss(left + 999);
+    }, 250);
+  });
+  onClose(() => { clearInterval(iv); clearInterval(iv2); });
+}
+
+function toolNotes(c) {
+  c.innerHTML = '<textarea class="tarea" placeholder="Your notes (saved in this browser)..."></textarea>';
+  const t = c.firstChild;
+  t.value = lsGet('proxy_notes', '');
+  t.addEventListener('input', () => lsSet('proxy_notes', t.value));
+}
+
+function toolTodo(c) {
+  c.innerHTML = '<div class="row"><input id="ti" type="text" class="wide" placeholder="Add a task and press Enter" style="flex:1"><button id="ta" type="button">Add</button></div><div id="tl"></div>';
+  let items = [];
+  try { items = JSON.parse(lsGet('proxy_todos', '[]')); } catch (_) {}
+  const list = q1(c, '#tl'), inp = q1(c, '#ti');
+  const save = () => lsSet('proxy_todos', JSON.stringify(items));
+  function render() {
+    list.innerHTML = '';
+    items.forEach((it, i) => {
+      const row = document.createElement('div');
+      row.className = 'todo-item' + (it.d ? ' done' : '');
+      const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = !!it.d;
+      cb.addEventListener('change', () => { it.d = cb.checked; save(); render(); });
+      const sp = document.createElement('span'); sp.textContent = it.t;
+      const del = document.createElement('button'); del.className = 'secondary'; del.textContent = '✕';
+      del.addEventListener('click', () => { items.splice(i, 1); save(); render(); });
+      row.append(cb, sp, del);
+      list.appendChild(row);
+    });
+  }
+  function add() { const v = inp.value.trim(); if (!v) return; items.push({ t: v, d: false }); inp.value = ''; save(); render(); }
+  q1(c, '#ta').addEventListener('click', add);
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') add(); });
+  render();
+}
+
+function toolPass(c) {
+  c.innerHTML = '<div class="row">Length <input type="range" id="pl" min="6" max="64" value="16"><b id="plv">16</b></div>' +
+    '<div class="row"><label><input type="checkbox" id="pu" checked> A-Z</label><label><input type="checkbox" id="pw" checked> a-z</label><label><input type="checkbox" id="pn" checked> 0-9</label><label><input type="checkbox" id="ps" checked> Symbols</label></div>' +
+    '<input type="text" id="pout" readonly class="wide"><div class="row"><button id="pg" type="button">Generate</button><button class="secondary" id="pc" type="button">Copy</button></div>';
+  const len = q1(c, '#pl'), out = q1(c, '#pout');
+  function gen() {
+    let set = '';
+    if (q1(c, '#pu').checked) set += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    if (q1(c, '#pw').checked) set += 'abcdefghijklmnopqrstuvwxyz';
+    if (q1(c, '#pn').checked) set += '0123456789';
+    if (q1(c, '#ps').checked) set += '!@#$%^&*()-_=+[]{};:,.?';
+    if (!set) { out.value = 'Pick at least one option'; return; }
+    const n = +len.value, r = crypto.getRandomValues(new Uint32Array(n));
+    out.value = Array.from(r, x => set[x % set.length]).join('');
+  }
+  len.addEventListener('input', () => { q1(c, '#plv').textContent = len.value; gen(); });
+  c.querySelectorAll('input[type=checkbox]').forEach(cb => cb.addEventListener('change', gen));
+  q1(c, '#pg').addEventListener('click', gen);
+  q1(c, '#pc').addEventListener('click', () => copyText(out.value));
+  gen();
+}
+
+function toolWords(c) {
+  c.innerHTML = '<textarea class="tarea" placeholder="Type or paste text..."></textarea><div class="res" id="wr"></div>';
+  const t = q1(c, 'textarea'), r = q1(c, '#wr');
+  function upd() {
+    const s = t.value, words = (s.trim().match(/\S+/g) || []).length;
+    const sentences = (s.match(/[^.!?]+[.!?]+/g) || []).length;
+    r.textContent = 'Words: ' + words + '\nCharacters: ' + s.length + '\nCharacters (no spaces): ' + s.replace(/\s/g, '').length +
+      '\nSentences: ' + sentences + '\nLines: ' + (s ? s.split('\n').length : 0) + '\nReading time: ~' + Math.max(words ? 1 : 0, Math.round(words / 200)) + ' min';
+  }
+  t.addEventListener('input', upd); upd();
+}
+
+function toolCase(c) {
+  c.innerHTML = '<textarea class="tarea" style="min-height:160px" placeholder="Type or paste text..."></textarea><div class="row" id="cb"></div>';
+  const t = q1(c, 'textarea');
+  const words = s => s.toLowerCase().match(/[a-z0-9]+/g) || [];
+  const ops = {
+    'UPPERCASE': s => s.toUpperCase(),
+    'lowercase': s => s.toLowerCase(),
+    'Title Case': s => s.toLowerCase().replace(/\b\w/g, m => m.toUpperCase()),
+    'Sentence case': s => s.toLowerCase().replace(/(^\s*|[.!?]\s+)([a-z])/g, (m, a, b) => a + b.toUpperCase()),
+    'camelCase': s => words(s).map((w, i) => i ? w[0].toUpperCase() + w.slice(1) : w).join(''),
+    'snake_case': s => words(s).join('_'),
+    'kebab-case': s => words(s).join('-'),
+    'Reverse': s => [...s].reverse().join(''),
+  };
+  Object.entries(ops).forEach(([n, fn]) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'secondary'; b.textContent = n;
+    b.addEventListener('click', () => { t.value = fn(t.value); });
+    q1(c, '#cb').appendChild(b);
+  });
+  const cp = document.createElement('button'); cp.type = 'button'; cp.textContent = 'Copy';
+  cp.addEventListener('click', () => copyText(t.value));
+  q1(c, '#cb').appendChild(cp);
+}
+
+function toolColor(c) {
+  c.innerHTML = '<div class="row"><input type="color" id="cp" value="#4da3ff" style="width:90px;height:60px;padding:2px"></div><div class="res" id="cr"></div><button class="secondary" id="cc" type="button">Copy HEX</button>';
+  const cp = q1(c, '#cp'), cr = q1(c, '#cr');
+  function upd() {
+    const hex = cp.value, n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+    const r1 = r / 255, g1 = g / 255, b1 = b / 255, mx = Math.max(r1, g1, b1), mn = Math.min(r1, g1, b1), d = mx - mn;
+    let h = 0; const l = (mx + mn) / 2, s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
+    if (d) { if (mx === r1) h = ((g1 - b1) / d) % 6; else if (mx === g1) h = (b1 - r1) / d + 2; else h = (r1 - g1) / d + 4; h *= 60; if (h < 0) h += 360; }
+    cr.textContent = 'HEX: ' + hex.toUpperCase() + '\nRGB: rgb(' + r + ', ' + g + ', ' + b + ')\nHSL: hsl(' + Math.round(h) + ', ' + Math.round(s * 100) + '%, ' + Math.round(l * 100) + '%)';
+  }
+  cp.addEventListener('input', upd);
+  q1(c, '#cc').addEventListener('click', () => copyText(cp.value.toUpperCase()));
+  upd();
+}
+
+function toolBase64(c) {
+  c.innerHTML = '<textarea class="tarea" style="min-height:120px" placeholder="Input..."></textarea><div class="row"><button id="be" type="button">Encode</button><button id="bd" class="secondary" type="button">Decode</button></div><div class="res" id="bo"></div>';
+  const t = q1(c, 'textarea'), o = q1(c, '#bo');
+  q1(c, '#be').addEventListener('click', () => {
+    const bytes = new TextEncoder().encode(t.value); let bin = '';
+    bytes.forEach(b => bin += String.fromCharCode(b));
+    o.textContent = btoa(bin);
+  });
+  q1(c, '#bd').addEventListener('click', () => {
+    try { o.textContent = new TextDecoder().decode(Uint8Array.from(atob(t.value.trim()), ch => ch.charCodeAt(0))); }
+    catch (_) { o.textContent = 'Invalid Base64 input'; }
+  });
+}
+
+function toolUrlEnc(c) {
+  c.innerHTML = '<textarea class="tarea" style="min-height:120px" placeholder="Input..."></textarea><div class="row"><button id="ue" type="button">Encode</button><button id="ud" class="secondary" type="button">Decode</button></div><div class="res" id="uo"></div>';
+  const t = q1(c, 'textarea'), o = q1(c, '#uo');
+  q1(c, '#ue').addEventListener('click', () => { o.textContent = encodeURIComponent(t.value); });
+  q1(c, '#ud').addEventListener('click', () => { try { o.textContent = decodeURIComponent(t.value); } catch (_) { o.textContent = 'Invalid encoded input'; } });
+}
+
+function toolJson(c) {
+  c.innerHTML = '<textarea class="tarea" style="min-height:180px" placeholder=\'Paste JSON here, e.g. {"a":1}\'></textarea><div class="row"><button id="jf" type="button">Format</button><button id="jm" class="secondary" type="button">Minify</button><button id="jc" class="secondary" type="button">Copy result</button></div><div class="res" id="jo"></div>';
+  const t = q1(c, 'textarea'), o = q1(c, '#jo');
+  const run = fn => { try { o.textContent = fn(JSON.parse(t.value)); } catch (e) { o.textContent = 'Invalid JSON: ' + e.message; } };
+  q1(c, '#jf').addEventListener('click', () => run(j => JSON.stringify(j, null, 2)));
+  q1(c, '#jm').addEventListener('click', () => run(j => JSON.stringify(j)));
+  q1(c, '#jc').addEventListener('click', () => copyText(o.textContent));
+}
+
+function toolDice(c) {
+  c.innerHTML = '<div class="row"><input id="dn" type="number" min="1" max="20" value="2" style="width:70px"> × d<select id="ds"></select><button id="dr" type="button">Roll</button><button id="df" class="secondary" type="button">Flip coin</button></div><div class="big" id="dout">-</div>';
+  const ds = q1(c, '#ds'), o = q1(c, '#dout');
+  [4, 6, 8, 10, 12, 20, 100].forEach(n => ds.add(new Option(n, n, n === 6, n === 6)));
+  const rnd = n => crypto.getRandomValues(new Uint32Array(1))[0] % n;
+  q1(c, '#dr').addEventListener('click', () => {
+    const n = Math.min(20, Math.max(1, parseInt(q1(c, '#dn').value) || 1)), s = +ds.value, rolls = [];
+    for (let i = 0; i < n; i++) rolls.push(rnd(s) + 1);
+    o.textContent = rolls.join(' + ') + (n > 1 ? ' = ' + rolls.reduce((a, b) => a + b, 0) : '');
+  });
+  q1(c, '#df').addEventListener('click', () => { o.textContent = rnd(2) ? 'Heads' : 'Tails'; });
+}
+
+function toolRandom(c) {
+  c.innerHTML = '<div class="row">Min <input id="rmin" type="number" value="1" style="width:90px"> Max <input id="rmax" type="number" value="100" style="width:90px"> Count <input id="rc" type="number" min="1" max="100" value="1" style="width:70px"><button id="rg" type="button">Generate</button></div><div class="res" id="ro"></div>';
+  q1(c, '#rg').addEventListener('click', () => {
+    let a = parseInt(q1(c, '#rmin').value), b = parseInt(q1(c, '#rmax').value);
+    const n = Math.min(100, Math.max(1, parseInt(q1(c, '#rc').value) || 1));
+    if (isNaN(a) || isNaN(b)) return;
+    if (a > b) [a, b] = [b, a];
+    const span = b - a + 1, out = [];
+    for (let i = 0; i < n; i++) out.push(a + crypto.getRandomValues(new Uint32Array(1))[0] % span);
+    q1(c, '#ro').textContent = out.join(', ');
+  });
+}
+
+function toolTip(c) {
+  c.innerHTML = '<div class="row">Bill $ <input id="tb" type="number" min="0" step="0.01" value="50" style="width:100px"> Tip % <input id="tp" type="number" min="0" value="18" style="width:70px"> People <input id="tn" type="number" min="1" value="1" style="width:70px"></div><div class="res" id="to"></div>';
+  const upd = () => {
+    const b = parseFloat(q1(c, '#tb').value) || 0, p = parseFloat(q1(c, '#tp').value) || 0, n = Math.max(1, parseInt(q1(c, '#tn').value) || 1);
+    const tip = b * p / 100, tot = b + tip;
+    q1(c, '#to').textContent = 'Tip: $' + tip.toFixed(2) + '\nTotal: $' + tot.toFixed(2) + '\nPer person: $' + (tot / n).toFixed(2);
+  };
+  c.querySelectorAll('input').forEach(i => i.addEventListener('input', upd)); upd();
+}
+
+function toolPercent(c) {
+  c.innerHTML = '<h3>What is X% of Y?</h3><div class="row"><input id="a1" type="number" value="15" style="width:90px">% of <input id="b1" type="number" value="200" style="width:90px"> = <b id="r1"></b></div>' +
+    '<h3>X is what % of Y?</h3><div class="row"><input id="a2" type="number" value="30" style="width:90px"> of <input id="b2" type="number" value="200" style="width:90px"> = <b id="r2"></b></div>' +
+    '<h3>Percent change from X to Y</h3><div class="row"><input id="a3" type="number" value="80" style="width:90px"> → <input id="b3" type="number" value="100" style="width:90px"> = <b id="r3"></b></div>';
+  const g = id => parseFloat(q1(c, id).value);
+  const fmt = n => isFinite(n) ? String(+n.toPrecision(8)) : '—';
+  const upd = () => {
+    q1(c, '#r1').textContent = fmt(g('#a1') / 100 * g('#b1'));
+    q1(c, '#r2').textContent = fmt(g('#a2') / g('#b2') * 100) + '%';
+    q1(c, '#r3').textContent = fmt((g('#b3') - g('#a3')) / Math.abs(g('#a3')) * 100) + '%';
+  };
+  c.querySelectorAll('input').forEach(i => i.addEventListener('input', upd)); upd();
+}
+
+function toolAge(c) {
+  c.innerHTML = '<div class="row">Birth date <input id="bd" type="date"></div><div class="res" id="ao">Pick a date.</div>';
+  q1(c, '#bd').addEventListener('input', () => {
+    const v = q1(c, '#bd').value; if (!v) return;
+    const b = new Date(v + 'T00:00:00'), n = new Date();
+    let y = n.getFullYear() - b.getFullYear(), m = n.getMonth() - b.getMonth(), d = n.getDate() - b.getDate();
+    if (d < 0) { m--; d += new Date(n.getFullYear(), n.getMonth(), 0).getDate(); }
+    if (m < 0) { y--; m += 12; }
+    const today = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+    let next = new Date(n.getFullYear(), b.getMonth(), b.getDate());
+    if (next < today) next = new Date(n.getFullYear() + 1, b.getMonth(), b.getDate());
+    q1(c, '#ao').textContent = y < 0 ? 'That date is in the future.' :
+      'Age: ' + y + ' years, ' + m + ' months, ' + d + ' days\nDays lived: ' + Math.floor((today - b) / 864e5).toLocaleString() + '\nNext birthday in: ' + Math.round((next - today) / 864e5) + ' days';
+  });
+}
+
+function toolBmi(c) {
+  c.innerHTML = '<div class="row"><select id="bu"><option value="m">Metric (kg, cm)</option><option value="i">Imperial (lb, in)</option></select> Weight <input id="bw" type="number" value="70" style="width:90px"> Height <input id="bh" type="number" value="175" style="width:90px"></div><div class="res" id="bo"></div>';
+  const upd = () => {
+    let w = parseFloat(q1(c, '#bw').value), h = parseFloat(q1(c, '#bh').value);
+    if (!(w > 0 && h > 0)) { q1(c, '#bo').textContent = ''; return; }
+    const bmi = q1(c, '#bu').value === 'm' ? w / Math.pow(h / 100, 2) : 703 * w / (h * h);
+    const cat = bmi < 18.5 ? 'Underweight' : bmi < 25 ? 'Normal weight' : bmi < 30 ? 'Overweight' : 'Obese';
+    q1(c, '#bo').textContent = 'BMI: ' + bmi.toFixed(1) + '\nCategory: ' + cat + '\n\n(General guide only, not medical advice.)';
+  };
+  c.querySelectorAll('input,select').forEach(i => i.addEventListener('input', upd)); upd();
+}
+
+function toolClock(c) {
+  const zones = [['New York','America/New_York'],['Chicago','America/Chicago'],['Denver','America/Denver'],['Los Angeles','America/Los_Angeles'],['London','Europe/London'],['Paris','Europe/Paris'],['Dubai','Asia/Dubai'],['Mumbai','Asia/Kolkata'],['Tokyo','Asia/Tokyo'],['Sydney','Australia/Sydney']];
+  c.innerHTML = '<div class="res" id="wc"></div>';
+  const upd = () => {
+    const now = new Date();
+    q1(c, '#wc').textContent = zones.map(([n, z]) =>
+      n.padEnd(14) + new Intl.DateTimeFormat([], { timeZone: z, weekday: 'short', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(now)).join('\n');
+  };
+  upd();
+  const iv = setInterval(upd, 1000);
+  onClose(() => clearInterval(iv));
+}
+
+// ================= Safety: network activity + black screen =================
+const blackout = $('blackout');
+const LEVELS = { low:{ mult:4, min:200e3 }, medium:{ mult:3, min:100e3 }, high:{ mult:2, min:30e3 } };
+const SAFE = Object.assign({ enabled:true, level:'medium', drops:false }, (() => { try { return JSON.parse(lsGet('proxy_safety', '{}')); } catch (_) { return {}; } })());
+const saveSafe = () => lsSet('proxy_safety', JSON.stringify(SAFE));
+const COOLDOWN_MS = 15000;
+let lastBytes = null, lastT = 0, rate = 0, baseline = 0, lastTrigger = 0;
+const history = [], netListeners = [];
+
+function showBlackout() { blackout.classList.add('show'); lastTrigger = Date.now(); }
+function closeBlackout() { blackout.classList.remove('show'); lastTrigger = Date.now(); }
+$('blackClose').addEventListener('click', closeBlackout);
+
+function checkChange(prevCount) {
+  if (!SAFE.enabled || blackout.classList.contains('show')) return;
+  if (Date.now() - lastTrigger < COOLDOWN_MS) return;
+  if (prevCount < 5) return;                       // need a short baseline first
+  const L = LEVELS[SAFE.level] || LEVELS.medium;
+  const base = Math.max(baseline, 10e3);
+  if (rate >= L.min && rate > base * L.mult) showBlackout();                       // big jump
+  else if (SAFE.drops && baseline >= L.min && rate < baseline / L.mult) showBlackout(); // big drop
+}
+
+// When the host can't count traffic (Cloudflare), measure what the page frame actually downloaded.
+let frameLast = 0, frameTotal = 0;
+function clientBytes() {
+  try {
+    const p = view.contentWindow.performance;
+    let cur = 0;
+    p.getEntriesByType('resource').forEach(e => { cur += e.encodedBodySize || 0; });
+    p.getEntriesByType('navigation').forEach(e => { cur += e.encodedBodySize || 0; });
+    frameTotal += cur >= frameLast ? cur - frameLast : cur;
+    frameLast = cur;
+  } catch (_) {}
+  return frameTotal;
+}
+async function pollNet() {
+  try {
+    const r = await fetch('/stats', { cache:'no-store' });
+    const j = await r.json();
+    if (j.bytes == null) j.bytes = clientBytes();
+    const now = Date.now();
+    if (lastBytes !== null) {
+      const dt = (now - lastT) / 1000 || 1;
+      rate = Math.max(0, (j.bytes - lastBytes) / dt);
+      const prev = history.slice(-10);
+      baseline = prev.length ? prev.reduce((a, b) => a + b, 0) / prev.length : 0;
+      history.push(rate);
+      if (history.length > 60) history.shift();
+      checkChange(prev.length);
+    }
+    lastBytes = j.bytes; lastT = now;
+  } catch (_) { lastBytes = null; }
+  netListeners.forEach(fn => fn());
+}
+setInterval(pollNet, 1000);
+pollNet();
+
+const fmtRate = b => b >= 1e6 ? (b / 1e6).toFixed(2) + ' MB/s' : (b / 1e3).toFixed(1) + ' KB/s';
+
+function toolSafety(c) {
+  c.innerHTML = '<h3>Network activity (live)</h3><div class="res" id="nrate">Waiting for data...</div>' +
+    '<canvas id="nchart" width="600" height="120" style="width:100%;max-width:600px;background:#0f1720;border:1px solid var(--line);border-radius:8px"></canvas>' +
+    '<h3>Black screen protection</h3>' +
+    '<div class="row"><label><input type="checkbox" id="sen"> Turn the screen black when network activity changes a lot</label></div>' +
+    '<div class="row">Sensitivity <select id="slv"><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option></select></div>' +
+    '<div class="row"><label><input type="checkbox" id="sdr"> Also trigger on sudden drops</label></div>' +
+    '<div class="row"><button id="stest" type="button">Test black screen</button></div>' +
+    '<div class="label">Close the black screen with the ✕ button at the top (or press Esc). Detection pauses for 15 seconds after it closes.</div>';
+  const en = q1(c, '#sen'), lv = q1(c, '#slv'), dr = q1(c, '#sdr'), cv = q1(c, '#nchart'), info = q1(c, '#nrate');
+  en.checked = SAFE.enabled; lv.value = SAFE.level; dr.checked = SAFE.drops;
+  en.addEventListener('change', () => { SAFE.enabled = en.checked; saveSafe(); });
+  lv.addEventListener('change', () => { SAFE.level = lv.value; saveSafe(); });
+  dr.addEventListener('change', () => { SAFE.drops = dr.checked; saveSafe(); });
+  q1(c, '#stest').addEventListener('click', () => { closeModal(); setTimeout(showBlackout, 150); });
+
+  function draw() {
+    const ctx = cv.getContext('2d'), W = cv.width, H = cv.height;
+    ctx.clearRect(0, 0, W, H);
+    const max = Math.max(50e3, ...history, baseline) * 1.15;
+    const y = v => H - 8 - (v / max) * (H - 16);
+    ctx.strokeStyle = '#4da3ff'; ctx.lineWidth = 2; ctx.beginPath();
+    history.forEach((v, i) => { const x = (i / 59) * W; i ? ctx.lineTo(x, y(v)) : ctx.moveTo(x, y(v)); });
+    ctx.stroke();
+    ctx.strokeStyle = '#8aa0b5'; ctx.setLineDash([5, 5]); ctx.beginPath();
+    ctx.moveTo(0, y(baseline)); ctx.lineTo(W, y(baseline)); ctx.stroke(); ctx.setLineDash([]);
+    const state = !SAFE.enabled ? 'Protection off' : (Date.now() - lastTrigger < COOLDOWN_MS ? 'Paused (cooldown)' : 'Monitoring');
+    info.textContent = 'Now: ' + fmtRate(rate) + '\nAverage (last 10s): ' + fmtRate(baseline) + '\nStatus: ' + state;
+  }
+  netListeners.push(draw);
+  onClose(() => { const i = netListeners.indexOf(draw); if (i > -1) netListeners.splice(i, 1); });
+  draw();
+}
+
+// ================= GUI: toast, loading bar, sound, theme, nav, home =================
+let toastT;
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+const lb = $('loadbar');
+let lbT;
+function startLoad() {
+  clearTimeout(lbT);
+  lb.style.transition = 'none'; lb.style.opacity = '1'; lb.style.width = '0';
+  void lb.offsetWidth;
+  lb.style.transition = 'width 8s cubic-bezier(.1,.6,.2,1), opacity .3s';
+  lb.style.width = '85%';
+}
+function endLoad() {
+  lb.style.transition = 'width .25s ease, opacity .4s .25s';
+  lb.style.width = '100%'; lb.style.opacity = '0';
+  lbT = setTimeout(() => { lb.style.transition = 'none'; lb.style.width = '0'; }, 800);
+}
+const hostOf = url => { try { return new URL(url).hostname.replace(/^www\./, ''); } catch (_) { return url; } };
+
+// ---- Quiet bubble-pop sounds (synthesized, no audio files) ----
+function safeParse(s) { try { return JSON.parse(s) || {}; } catch (_) { return {}; } }
+const SND = Object.assign({ on:true, vol:0.35, hover:false }, safeParse(lsGet('proxy_sound', '{}')));
+const saveSnd = () => lsSet('proxy_sound', JSON.stringify(SND));
+let actx = null;
+function audio() {
+  if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (_) {} }
+  if (actx && actx.state === 'suspended') actx.resume();
+  return actx;
+}
+function bubbleAt(a, t, base, sweep, dur, peak) {
+  const o = a.createOscillator(), g = a.createGain();
+  const f0 = base * (0.92 + Math.random() * 0.2);
+  o.type = 'sine';
+  o.frequency.setValueAtTime(f0, t);
+  o.frequency.exponentialRampToValueAtTime(f0 * sweep, t + dur * 0.65);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(peak, t + 0.006);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g); g.connect(a.destination);
+  o.start(t); o.stop(t + dur + 0.02);
+  // tiny filtered click for the "pop" edge
+  const len = Math.floor(a.sampleRate * 0.02), buf = a.createBuffer(1, len, a.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+  const n = a.createBufferSource(), nf = a.createBiquadFilter(), ng = a.createGain();
+  n.buffer = buf; nf.type = 'bandpass'; nf.frequency.value = base * 3; ng.gain.value = peak * 0.35;
+  n.connect(nf); nf.connect(ng); ng.connect(a.destination);
+  n.start(t);
+}
+function bubble(kind, mul) {
+  if (!SND.on) return;
+  const a = audio(); if (!a) return;
+  const t = a.currentTime, p = 0.25 * SND.vol * (mul || 1);
+  if (kind === 'high') bubbleAt(a, t, 760, 1.9, 0.09, p);
+  else if (kind === 'hover') bubbleAt(a, t, 980, 1.5, 0.05, p * 0.45);
+  else if (kind === 'open') { bubbleAt(a, t, 430, 1.9, 0.09, p); bubbleAt(a, t + 0.07, 640, 1.9, 0.09, p * 0.9); }
+  else if (kind === 'close') { bubbleAt(a, t, 640, 1.7, 0.08, p * 0.9); bubbleAt(a, t + 0.07, 400, 1.7, 0.1, p); }
+  else bubbleAt(a, t, 540, 2.0, 0.1, p);
+}
+document.addEventListener('pointerdown', e => {
+  if (blackout.classList.contains('show') || document.body.classList.contains('locked')) return;
+  const el = e.target.closest('button, select, label, .tile');
+  if (!el) return;
+  let kind = 'pop';
+  if (el.dataset.folder || el.id === 'settingsBtn') kind = 'open';
+  else if (el.id === 'mClose' || el.id === 'mBack') kind = 'close';
+  else if (/\b(tile|card|fcard)\b/.test(el.className)) kind = 'high';
+  bubble(kind);
+});
+let lastHover = 0;
+document.addEventListener('mouseover', e => {
+  if (!SND.hover || !e.target.closest) return;
+  const el = e.target.closest('.tile, .card, .fcard');
+  if (!el || el === document._lastHoverEl) return;
+  document._lastHoverEl = el;
+  const now = Date.now();
+  if (now - lastHover > 70) { lastHover = now; bubble('hover'); }
+});
+const soundBtn = $('soundBtn');
+const syncSoundBtn = () => { soundBtn.textContent = SND.on ? '🔊' : '🔇'; };
+soundBtn.addEventListener('click', () => {
+  SND.on = !SND.on; saveSnd(); syncSoundBtn();
+  toast(SND.on ? 'Sound effects on' : 'Sound effects off');
+  if (SND.on) setTimeout(() => bubble('pop'), 40);
+});
+syncSoundBtn();
+
+function toolSound(c) {
+  c.innerHTML = '<h3>Sound effects</h3>' +
+    '<div class="row"><label><input type="checkbox" id="son"> Bubble-pop click sounds</label></div>' +
+    '<div class="row"><label><input type="checkbox" id="sho"> Soft sound when hovering tiles</label></div>' +
+    '<div class="row">Volume <input type="range" id="svol" min="0" max="100" style="width:200px"><b id="svv"></b></div>' +
+    '<div class="row"><button id="stst" type="button">Test pop</button></div>' +
+    '<div class="label">Sounds are quiet on purpose. The black screen itself is always silent.</div>';
+  const on = q1(c, '#son'), ho = q1(c, '#sho'), vol = q1(c, '#svol'), vv = q1(c, '#svv');
+  on.checked = SND.on; ho.checked = SND.hover; vol.value = Math.round(SND.vol * 100); vv.textContent = vol.value + '%';
+  on.addEventListener('change', () => { SND.on = on.checked; saveSnd(); syncSoundBtn(); });
+  ho.addEventListener('change', () => { SND.hover = ho.checked; saveSnd(); });
+  vol.addEventListener('input', () => { SND.vol = vol.value / 100; vv.textContent = vol.value + '%'; saveSnd(); });
+  vol.addEventListener('change', () => bubble('pop'));
+  q1(c, '#stst').addEventListener('click', () => { const w = SND.on; SND.on = true; bubble('open'); SND.on = w; });
+}
+
+// ---- Appearance ----
+const ACCENTS = { Ocean:['#5b9dff','#8b5cf6'], Mint:['#2dd4bf','#3b82f6'], Rose:['#fb7185','#f59e0b'], Violet:['#a78bfa','#ec4899'], Lime:['#a3e635','#22d3ee'], Sunset:['#f97316','#ec4899'] };
+const THEME = Object.assign({ accent:'Ocean', bg:true }, safeParse(lsGet('proxy_theme', '{}')));
+const saveTheme = () => lsSet('proxy_theme', JSON.stringify(THEME));
+function applyTheme() {
+  const [a, b] = ACCENTS[THEME.accent] || ACCENTS.Ocean;
+  document.documentElement.style.setProperty('--accent', a);
+  document.documentElement.style.setProperty('--accent2', b);
+  document.body.classList.toggle('nobg', !THEME.bg);
+}
+function toolAppearance(c) {
+  c.innerHTML = '<h3>Accent color</h3><div class="row" id="sw"></div><h3>Background</h3><div class="row"><label><input type="checkbox" id="abg"> Animated glowing background</label></div>';
+  const row = q1(c, '#sw'), abg = q1(c, '#abg');
+  function draw() {
+    row.innerHTML = '';
+    Object.entries(ACCENTS).forEach(([name, [a, b]]) => {
+      const s = document.createElement('button');
+      s.type = 'button'; s.title = name;
+      s.className = 'swatch' + (THEME.accent === name ? ' sel' : '');
+      s.style.background = 'linear-gradient(135deg,' + a + ',' + b + ')';
+      s.addEventListener('click', () => { THEME.accent = name; saveTheme(); applyTheme(); draw(); });
+      row.appendChild(s);
+    });
+  }
+  abg.checked = THEME.bg;
+  abg.addEventListener('change', () => { THEME.bg = abg.checked; saveTheme(); applyTheme(); });
+  draw();
+}
+
+// ---- Browser nav buttons ----
+$('nBack').addEventListener('click', () => { try { view.contentWindow.history.back(); } catch (_) {} });
+$('nFwd').addEventListener('click', () => { try { view.contentWindow.history.forward(); } catch (_) {} });
+$('nReload').addEventListener('click', () => {
+  if (view.style.display !== 'block') return;
+  startLoad();
+  try { view.contentWindow.location.reload(); } catch (_) { view.src = view.src; }
+});
+$('nHome').addEventListener('click', () => {
+  showTab('browse');
+  view.style.display = 'none';
+  home.style.display = '';
+  u.value = '';
+});
+
+// ---- Home screen ----
+$('cGames').textContent = GAMES.length + ' sites';
+$('cStream').textContent = STREAMING.length + ' apps';
+$('cTools').textContent = TOOLS.length + ' tools';
+$('cRun').addEventListener('click', () => showTab('runner'));
+(function renderFeatured() {
+  const all = GAMES.concat(STREAMING), box = $('featured');
+  ['YouTube', 'Twitch', 'Spotify', 'CrazyGames', 'Poki', 'Chess.com', 'Krunker', 'Wordle', 'Coolmath Games', 'Tubi'].forEach(n => {
+    const it = all.find(x => x[0] === n); if (!it) return;
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'fcard';
+    b.textContent = it[1] + ' ' + it[0];
+    b.addEventListener('click', () => go(it[2]));
+    box.appendChild(b);
+  });
+})();
+applyTheme();
+
+// ---- Full screen mode ----
+const inFs = () => document.body.classList.contains('fs');
+function enterFs() {
+  closeModal();
+  document.body.classList.add('fs');
+  const el = document.documentElement, req = el.requestFullscreen || el.webkitRequestFullscreen;
+  if (req) { try { const p = req.call(el); if (p && p.catch) p.catch(() => {}); } catch (_) {} }
+  toast('Full screen: press Esc to exit');
+}
+function exitFs() {
+  document.body.classList.remove('fs');
+  const ex = document.exitFullscreen || document.webkitExitFullscreen;
+  if (ex && (document.fullscreenElement || document.webkitFullscreenElement)) {
+    try { const p = ex.call(document); if (p && p.catch) p.catch(() => {}); } catch (_) {}
+  }
+}
+// The browser handles Esc itself in real full screen; this brings the GUI back when it does.
+function onFsChange() { if (!document.fullscreenElement && !document.webkitFullscreenElement) document.body.classList.remove('fs'); }
+document.addEventListener('fullscreenchange', onFsChange);
+document.addEventListener('webkitfullscreenchange', onFsChange);
+$('fsBtn').addEventListener('click', () => (inFs() ? exitFs() : enterFs()));
+
+// ---- Swipe in from the screen edge twice to exit full screen ----
+let swipeCount = 0, swipeTimer;
+function onEdgeSwipe() {
+  if (!inFs()) return;
+  swipeCount++;
+  clearTimeout(swipeTimer);
+  if (swipeCount >= 2) { swipeCount = 0; exitFs(); return; }
+  toast('Swipe in from the edge once more to exit full screen');
+  swipeTimer = setTimeout(() => { swipeCount = 0; }, 2500);
+}
+function watchEdge(el, dir) {            // dir: +1 = left edge (swipe right), -1 = right edge (swipe left)
+  let sx = null, sy = 0;
+  el.addEventListener('pointerdown', e => { sx = e.clientX; sy = e.clientY; try { el.setPointerCapture(e.pointerId); } catch (_) {} });
+  el.addEventListener('pointermove', e => {
+    if (sx === null) return;
+    const dx = (e.clientX - sx) * dir, dy = Math.abs(e.clientY - sy);
+    if (dx > 40 && dx > dy) { sx = null; onEdgeSwipe(); }
+  });
+  ['pointerup', 'pointercancel'].forEach(t => el.addEventListener(t, () => { sx = null; }));
+}
+watchEdge($('edgeL'), 1);
+watchEdge($('edgeR'), -1);
+
+
+// ================= School Tips cover: filters, widgets, code unlock =================
+const UNLOCK_CODE = '2323';
+const codeBox = $('codeBox'), codeIn = $('codeIn'), codeMsg = $('codeMsg'), codeCard = $('codeCard');
+function openCode() {
+  codeIn.value = ''; codeMsg.textContent = '';
+  codeBox.classList.add('show');
+  setTimeout(() => codeIn.focus(), 50);
+}
+function closeCode() { codeBox.classList.remove('show'); }
+function unlock() {
+  closeCode();
+  document.body.classList.remove('locked');
+  showTab('browse');
+  bubble('open');
+}
+function lock() {
+  closeModal();
+  if (inFs()) exitFs();
+  view.src = 'about:blank';          // stops any video or audio
+  view.style.display = 'none';
+  home.style.display = '';
+  u.value = '';
+  document.body.classList.add('locked');
+  $('cover').scrollTop = 0;
+}
+function checkCode() {
+  const v = codeIn.value.replace(/\D/g, '');
+  codeIn.value = v;
+  if (v.length < 4) return;
+  if (v === UNLOCK_CODE) { unlock(); return; }
+  codeMsg.textContent = 'Incorrect code';
+  codeCard.classList.remove('shake'); void codeCard.offsetWidth; codeCard.classList.add('shake');
+  setTimeout(() => { codeIn.value = ''; }, 350);
+}
+$('codeBtn').addEventListener('click', openCode);
+$('codeCancel').addEventListener('click', closeCode);
+codeBox.addEventListener('mousedown', e => { if (e.target === codeBox) closeCode(); });
+codeIn.addEventListener('input', checkCode);
+codeIn.addEventListener('keydown', e => { if (e.key === 'Enter') checkCode(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && codeBox.classList.contains('show')) closeCode(); });
+$('lockBtn').addEventListener('click', lock);
+
+// Tip filters
+document.querySelectorAll('#cChips .chip').forEach(ch => ch.addEventListener('click', () => {
+  document.querySelectorAll('#cChips .chip').forEach(x => x.classList.toggle('on', x === ch));
+  const f = ch.dataset.f;
+  document.querySelectorAll('#cGrid .c-card').forEach(card => { card.style.display = (f === 'all' || card.dataset.cat === f) ? '' : 'none'; });
+}));
+
+// Study timer (25 min focus / 5 min break)
+(function () {
+  const disp = $('pDisp'), go = $('pGo'), mode = $('pMode');
+  let focus = true, left = 25 * 60, iv = null;
+  const draw = () => { disp.textContent = pad(Math.floor(left / 60)) + ':' + pad(left % 60); mode.textContent = focus ? 'Focus time' : 'Break time'; };
+  go.addEventListener('click', () => {
+    if (iv) { clearInterval(iv); iv = null; go.textContent = 'Start'; return; }
+    iv = setInterval(() => { left--; if (left <= 0) { beep(); focus = !focus; left = (focus ? 25 : 5) * 60; } draw(); }, 1000);
+    go.textContent = 'Pause';
+  });
+  $('pReset').addEventListener('click', () => { clearInterval(iv); iv = null; focus = true; left = 25 * 60; go.textContent = 'Start'; draw(); });
+  draw();
+})();
+
+// GPA calculator
+(function () {
+  const POINTS = { A:4, B:3, C:2, D:1, F:0 }, box = $('gRows'), rows = [];
+  for (let i = 0; i < 6; i++) {
+    const r = document.createElement('div');
+    r.className = 'g-row';
+    r.innerHTML = '<select><option value="">Grade</option><option>A</option><option>B</option><option>C</option><option>D</option><option>F</option></select><input type="number" min="0" step="0.5" value="1" title="Credits">';
+    r.addEventListener('input', calc);
+    box.appendChild(r); rows.push(r);
+  }
+  function calc() {
+    let pts = 0, cr = 0;
+    rows.forEach(r => {
+      const g = r.querySelector('select').value, c = parseFloat(r.querySelector('input').value);
+      if (g && c > 0) { pts += POINTS[g] * c; cr += c; }
+    });
+    $('gOut').textContent = cr ? 'GPA: ' + (pts / cr).toFixed(2) : 'Pick your grades to see your GPA';
+  }
+})();
+
+// ================= Extensions (emulated Chrome extensions) =================
+// <ext-pure>
+const MIME = { js:'text/javascript', mjs:'text/javascript', css:'text/css', html:'text/html', htm:'text/html', json:'application/json', png:'image/png', jpg:'image/jpeg', jpeg:'image/jpeg', gif:'image/gif', svg:'image/svg+xml', webp:'image/webp', ico:'image/x-icon', woff:'font/woff', woff2:'font/woff2', ttf:'font/ttf', txt:'text/plain' };
+const mimeOf = n => MIME[(n.split('.').pop() || '').toLowerCase()] || 'application/octet-stream';
+
+async function inflateRaw(u8) {
+  const ds = new DecompressionStream('deflate-raw');
+  const out = new Blob([u8]).stream().pipeThrough(ds);
+  return new Uint8Array(await new Response(out).arrayBuffer());
+}
+async function readZip(buf) {
+  const u8 = new Uint8Array(buf), dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength), td = new TextDecoder();
+  let eocd = -1;
+  for (let i = u8.length - 22; i >= Math.max(0, u8.length - 65557); i--) {
+    if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+  }
+  if (eocd < 0) throw new Error('That is not a valid zip file');
+  const count = dv.getUint16(eocd + 10, true);
+  let p = dv.getUint32(eocd + 16, true);
+  const files = {};
+  for (let n = 0; n < count; n++) {
+    if (dv.getUint32(p, true) !== 0x02014b50) break;
+    const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true);
+    const nlen = dv.getUint16(p + 28, true), xlen = dv.getUint16(p + 30, true), clen = dv.getUint16(p + 32, true), off = dv.getUint32(p + 42, true);
+    const name = td.decode(u8.subarray(p + 46, p + 46 + nlen));
+    p += 46 + nlen + xlen + clen;
+    if (name.endsWith('/')) continue;
+    const start = off + 30 + dv.getUint16(off + 26, true) + dv.getUint16(off + 28, true);
+    const raw = u8.subarray(start, start + csize);
+    if (method === 0) files[name] = raw.slice();
+    else if (method === 8) files[name] = await inflateRaw(raw);
+  }
+  return files;
+}
+function stripCrx(buf) {
+  const u8 = new Uint8Array(buf);
+  if (u8.length > 16 && u8[0] === 0x43 && u8[1] === 0x72 && u8[2] === 0x32 && u8[3] === 0x34) {   // "Cr24"
+    const dv = new DataView(buf), ver = dv.getUint32(4, true);
+    if (ver === 3) return buf.slice(12 + dv.getUint32(8, true));
+    if (ver === 2) return buf.slice(16 + dv.getUint32(8, true) + dv.getUint32(12, true));
+    throw new Error('Unsupported CRX version ' + ver);
+  }
+  return buf;
+}
+function normFiles(files) {
+  const names = Object.keys(files).filter(k => files[k] && !/^(__MACOSX|\.git)\//.test(k));
+  const mans = names.filter(k => /(^|\/)manifest\.json$/.test(k)).sort((a, b) => a.split('/').length - b.split('/').length);
+  if (!mans.length) throw new Error('No manifest.json found in that file or folder');
+  const root = mans[0].slice(0, mans[0].length - 'manifest.json'.length), out = {};
+  names.forEach(k => { if (k.startsWith(root)) out[k.slice(root.length)] = { mime: mimeOf(k), data: files[k] }; });
+  return out;
+}
+function patRe(p) {
+  if (p === '<all_urls>') return /^(https?|ftp):\/\/.*$/i;
+  const m = String(p).match(/^(\*|https?|ftp):\/\/([^/]*)(\/.*)$/);
+  if (!m) return null;
+  const esc = s => s.replace(/[.+?^${}()|[\]\\]/g, '\\$&');
+  const scheme = m[1] === '*' ? 'https?' : m[1], host = m[2];
+  const hostRe = host === '*' ? '[^/]+' : host.startsWith('*.') ? '(?:[^/]+\\.)?' + esc(host.slice(2)) : esc(host);
+  return new RegExp('^' + scheme + ':\\/\\/' + hostRe + esc(m[3]).replace(/\*/g, '.*') + '$', 'i');
+}
+function parseJsonLoose(text) {
+  text = text.replace(/^﻿/, '');
+  try { return JSON.parse(text); } catch (_) {}
+  return JSON.parse(text.split('\n').filter(l => !/^\s*\/\//.test(l)).join('\n'));
+}
+function i18nResolve(str, msgs) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/__MSG_(\w+)__/g, (whole, k) => {
+    const hit = msgs[k] || msgs[k.toLowerCase()] || Object.entries(msgs).find(([kk]) => kk.toLowerCase() === k.toLowerCase());
+    const e = Array.isArray(hit) ? hit[1] : hit;
+    return e && e.message ? e.message : whole;
+  });
+}
+function hash32(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); }
+// </ext-pure>
+
+// ---- storage of installed extensions (IndexedDB) ----
+function extDB() {
+  return new Promise((res, rej) => {
+    if (!window.indexedDB) return rej(new Error('IndexedDB unavailable'));
+    const r = indexedDB.open('proxy_ext', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('ext', { keyPath:'id' });
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+async function dbOp(mode, fn) {
+  const db = await extDB();
+  return new Promise((res, rej) => {
+    const tx = db.transaction('ext', mode), rq = fn(tx.objectStore('ext'));
+    tx.oncomplete = () => res(rq && rq.result);
+    tx.onerror = tx.onabort = () => rej(tx.error);
+  });
+}
+const dbAll = () => dbOp('readonly', st => st.getAll()).catch(() => []);
+const dbPut = rec => dbOp('readwrite', st => st.put(rec));
+const dbDel = id => dbOp('readwrite', st => st.delete(id)).catch(() => {});
+
+// ---- extension objects ----
+const EXT = { list: [] };
+window.__extChromes = {};
+let extSeq = 0;
+const enabledMap = () => safeParse(lsGet('proxy_ext_enabled', '{}'));
+const setEnabled = (id, on) => { const m = enabledMap(); m[id] = on; lsSet('proxy_ext_enabled', JSON.stringify(m)); };
+
+function extMsgs(files, manifest) {
+  for (const l of [manifest.default_locale, 'en', 'en_US']) {
+    const f = l && files['_locales/' + l + '/messages.json'];
+    if (f) { try { return parseJsonLoose(new TextDecoder().decode(f.data)); } catch (_) {} }
+  }
+  return {};
+}
+function makeExt(rec) {
+  const msgs = extMsgs(rec.files, rec.manifest);
+  return { id: rec.id, manifest: rec.manifest, files: rec.files, msgs,
+    name: i18nResolve(rec.manifest.name, msgs) || rec.id,
+    description: i18nResolve(rec.manifest.description || '', msgs),
+    version: rec.manifest.version || '',
+    enabled: enabledMap()[rec.id] !== false,
+    urls: {}, msgL: [], events: {}, bg: null };
+}
+function urlOf(ext, p) {
+  p = String(p || '').replace(/^\/+/, '').split(/[?#]/)[0];
+  if (ext.urls[p]) return ext.urls[p];
+  const f = ext.files[p];
+  if (!f) return '';
+  return (ext.urls[p] = URL.createObjectURL(new Blob([f.data], { type: f.mime })));
+}
+function extIcon(ext) {
+  const m = ext.manifest, ic = m.icons || (m.action || m.browser_action || {}).default_icon;
+  const path = typeof ic === 'string' ? ic : ic && ic[Object.keys(ic).map(Number).sort((a, b) => b - a)[0]];
+  return path ? urlOf(ext, path) : '';
+}
+const extPopupPath = ext => { const m = ext.manifest, a = m.action || m.browser_action || m.page_action || {}; return (a.default_popup || '').replace(/^\/+/, '').split(/[?#]/)[0]; };
+const extOptionsPath = ext => { const m = ext.manifest; return ((m.options_ui && m.options_ui.page) || m.options_page || '').replace(/^\/+/, '').split(/[?#]/)[0]; };
+
+// ---- messaging and the chrome.* API ----
+function evtObj(ext, name) {
+  const set = ext.events[name] || (ext.events[name] = []);
+  return { addListener: f => { if (!set.includes(f)) set.push(f); }, removeListener: f => { const i = set.indexOf(f); if (i > -1) set.splice(i, 1); }, hasListener: f => set.includes(f), hasListeners: () => set.length > 0 };
+}
+function fire(ext, name, ...args) { (ext.events[name] || []).slice().forEach(f => { try { f(...args); } catch (e) { console.warn(e); } }); }
+function stub() {
+  const f = function (...a) { const cb = a.find(x => typeof x === 'function'); if (cb) { try { cb(); } catch (_) {} } return Promise.resolve(); };
+  return new Proxy(f, { get: (t, k) => {
+    if (k === 'addListener' || k === 'removeListener' || k === 'hasListener' || k === 'removeRules' || k === 'addRules') return () => false;
+    if (typeof k === 'symbol' || k === 'then') return undefined;
+    return stub();
+  } });
+}
+function cbOrP(cb, run) {
+  if (cb) { run(v => setTimeout(() => cb(v), 0)); return undefined; }
+  return new Promise(res => run(res));
+}
+const asyncApi = fn => (...a) => {
+  const cb = typeof a[a.length - 1] === 'function' ? a.pop() : null;
+  return cbOrP(cb, done => {
+    let r; try { r = fn(...a); } catch (e) { console.warn(e); }
+    if (r && typeof r.then === 'function') r.then(done, () => done(undefined)); else done(r);
+  });
+};
+function deliver(ext, fromCtx, toCtx, msg, sender, done) {
+  let finished = false, pending = false;
+  const respond = r => { if (!finished) { finished = true; done(r); } };
+  ext.msgL.slice().forEach(l => {
+    if (l.ctx === fromCtx || (toCtx && l.ctx !== toCtx)) return;
+    try {
+      const rv = l.fn(msg, sender, respond);
+      if (rv === true) pending = true;
+      else if (rv && typeof rv.then === 'function') { pending = true; rv.then(respond, () => respond(undefined)); }
+    } catch (e) { console.warn(e); }
+  });
+  if (!pending) setTimeout(() => respond(undefined), 0);
+}
+function realUrlOfFrame() { try { return new URL(view.contentWindow.location.href).searchParams.get('url') || ''; } catch (_) { return ''; } }
+function runInFrame(ext, o) {
+  let win; try { win = view.contentWindow; void win.document; } catch (_) { return []; }
+  const ch = makeChrome(ext, 'content'), td = new TextDecoder(), res = [];
+  const run = code => { try { return win.Function('chrome', 'browser', code).call(win, ch, ch); } catch (e) { console.warn(e); } };
+  if (o && typeof o.func === 'function') { try { res.push({ result: win.Function('return (' + o.func.toString() + ').apply(null, arguments)').apply(win, o.args || []) }); } catch (e) { console.warn(e); } }
+  [].concat((o && (o.files || o.file)) || []).forEach(p => { const f = ext.files[String(p).replace(/^\//, '')]; if (f) run(td.decode(f.data)); });
+  if (o && o.code) run(o.code);
+  return res;
+}
+function insertCss(ext, o) {
+  try {
+    const d = view.contentWindow.document, td = new TextDecoder();
+    const css = (o && o.css) || [].concat((o && (o.files || o.file)) || []).map(p => { const f = ext.files[String(p).replace(/^\//, '')]; return f ? td.decode(f.data) : ''; }).join('\n');
+    const st = d.createElement('style'); st.textContent = css; (d.head || d.documentElement).appendChild(st);
+  } catch (_) {}
+}
+
+function makeChrome(ext, ctx) {
+  const sender = () => ({ id: ext.id, url: ctx === 'content' ? realUrlOfFrame() : 'chrome-extension://' + ext.id + '/', tab: ctx === 'content' ? { id: 1, url: realUrlOfFrame(), active: true } : undefined });
+  const storeKey = 'proxy_extstore_' + ext.id;
+  const readStore = () => safeParse(lsGet(storeKey, '{}'));
+  const writeStore = o => lsSet(storeKey, JSON.stringify(o));
+  const area = {
+    get: asyncApi(keys => {
+      const s = readStore(); let out = {};
+      if (keys == null) out = s;
+      else if (typeof keys === 'string') { if (keys in s) out[keys] = s[keys]; }
+      else if (Array.isArray(keys)) keys.forEach(k => { if (k in s) out[k] = s[k]; });
+      else Object.keys(keys).forEach(k => { out[k] = k in s ? s[k] : keys[k]; });
+      return out;
+    }),
+    set: asyncApi(items => {
+      const s = readStore(), ch = {};
+      Object.keys(items || {}).forEach(k => { ch[k] = { oldValue: s[k], newValue: items[k] }; s[k] = items[k]; });
+      writeStore(s); fire(ext, 'storage.onChanged', ch, 'local');
+    }),
+    remove: asyncApi(keys => {
+      const s = readStore(), ch = {};
+      [].concat(keys).forEach(k => { if (k in s) { ch[k] = { oldValue: s[k] }; delete s[k]; } });
+      writeStore(s); fire(ext, 'storage.onChanged', ch, 'local');
+    }),
+    clear: asyncApi(() => { writeStore({}); }),
+    getBytesInUse: asyncApi(() => JSON.stringify(readStore()).length),
+  };
+  const base = {
+    storage: { local: area, sync: area, session: area, managed: area, onChanged: evtObj(ext, 'storage.onChanged') },
+    runtime: {
+      id: ext.id,
+      getManifest: () => JSON.parse(JSON.stringify(ext.manifest)),
+      getURL: p => urlOf(ext, p),
+      sendMessage: (...a) => {
+        if (typeof a[0] === 'string' && a.length > 1 && typeof a[1] !== 'function') a.shift();
+        const cb = typeof a[a.length - 1] === 'function' ? a.pop() : null;
+        return cbOrP(cb, done => deliver(ext, ctx, null, a[0], sender(), done));
+      },
+      onMessage: {
+        addListener: fn => ext.msgL.push({ fn, ctx }),
+        removeListener: fn => { ext.msgL = ext.msgL.filter(l => l.fn !== fn); },
+        hasListener: fn => ext.msgL.some(l => l.fn === fn),
+      },
+      onInstalled: evtObj(ext, 'runtime.onInstalled'),
+      onStartup: evtObj(ext, 'runtime.onStartup'),
+      connect: () => ({ name: '', postMessage() {}, disconnect() {}, onMessage: { addListener() {}, removeListener() {} }, onDisconnect: { addListener() {}, removeListener() {} } }),
+      openOptionsPage: () => openExtPage(ext, 'options'),
+      getPlatformInfo: asyncApi(() => ({ os: 'win', arch: 'x86-64', nacl_arch: 'x86-64' })),
+      reload() {}, lastError: undefined,
+    },
+    i18n: {
+      getMessage: (k, subs) => { const e = ext.msgs[k] || ext.msgs[String(k).toLowerCase()]; let t = e ? e.message : ''; [].concat(subs || []).forEach((v, i) => { t = t.split('$' + (i + 1)).join(v); }); return t; },
+      getUILanguage: () => 'en',
+    },
+    tabs: {
+      query: asyncApi(() => [{ id: 1, windowId: 1, active: true, url: realUrlOfFrame() || undefined, title: '' }]),
+      get: asyncApi(() => ({ id: 1, url: realUrlOfFrame() })),
+      getCurrent: asyncApi(() => ({ id: 1 })),
+      create: asyncApi(o => {
+        const url = (o && o.url) || '';
+        if (/^https?:/i.test(url)) {
+          if (ctx === 'background') toast(ext.name + ' wanted to open ' + hostOf(url) + ' (blocked)');
+          else { closeModal(); go(url); }
+        }
+        return { id: 2 };
+      }),
+      update: asyncApi((a, b) => { const o = typeof a === 'object' ? a : b; if (ctx !== 'background' && o && /^https?:/i.test(o.url || '')) { closeModal(); go(o.url); } return { id: 1 }; }),
+      sendMessage: (...a) => { const cb = typeof a[a.length - 1] === 'function' ? a.pop() : null; return cbOrP(cb, done => deliver(ext, ctx, 'content', a[1], sender(), done)); },
+      executeScript: asyncApi((...a) => runInFrame(ext, typeof a[a.length - 1] === 'object' ? a[a.length - 1] : a[0])),
+      insertCSS: asyncApi((...a) => insertCss(ext, typeof a[a.length - 1] === 'object' ? a[a.length - 1] : a[0])),
+      reload: asyncApi(() => { $('nReload').click(); }),
+    },
+    scripting: { executeScript: asyncApi(o => runInFrame(ext, o)), insertCSS: asyncApi(o => insertCss(ext, o)) },
+    permissions: { contains: asyncApi(() => true), request: asyncApi(() => true), getAll: asyncApi(() => ({ permissions: [], origins: [] })) },
+  };
+  base.extension = { getURL: base.runtime.getURL, inIncognitoContext: false };
+  return new Proxy(base, { get: (t, k) => (k in t ? t[k] : (typeof k === 'string' && k !== 'then' ? stub() : undefined)) });
+}
+
+// ---- pages (popup / options / background) ----
+function pageHtml(ext, relPath, key) {
+  const f = ext.files[relPath];
+  if (!f) return null;
+  const td = new TextDecoder(), dir = relPath.replace(/[^/]*$/, '');
+  let html = td.decode(f.data);
+  const resolve = p => {
+    if (!p || /^([a-z][a-z0-9+.-]*:|\/\/|#)/i.test(p)) return null;
+    try { return decodeURIComponent(new URL(p.split('#')[0].split('?')[0], 'http://x/' + dir).pathname.slice(1)); } catch (_) { return null; }
+  };
+  html = html.replace(/<script\b[^>]*?\ssrc\s*=\s*(["'])(.*?)\1[^>]*>\s*<\/script>/gi, (m, q, src) => {
+    const p = resolve(src), sf = p && ext.files[p];
+    return sf ? '<script>' + td.decode(sf.data).replace(/<\/script/gi, '<\\/script') + '<\/script>' : '';
+  });
+  html = html.replace(/<link\b[^>]*>/gi, m => {
+    const h = (m.match(/href\s*=\s*(["'])(.*?)\1/i) || [])[2], p = resolve(h), lf = p && ext.files[p];
+    if (!lf) return m;
+    return /rel\s*=\s*["']?stylesheet/i.test(m) ? '<style>' + td.decode(lf.data) + '</style>' : m.replace(h, urlOf(ext, p));
+  });
+  html = html.replace(/(<(?:img|source|audio|video|embed)\b[^>]*?\ssrc\s*=\s*)(["'])(.*?)\2/gi, (m, pre, q, src) => {
+    const p = resolve(src);
+    return p && ext.files[p] ? pre + q + urlOf(ext, p) + q : m;
+  });
+  const init = '<script>window.chrome=window.browser=parent.__extChromes[' + JSON.stringify(key) + '];<\/script>';
+  return /<head[^>]*>/i.test(html) ? html.replace(/<head[^>]*>/i, m => m + init) : init + html;
+}
+function openExtPage(ext, which) {
+  const path = which === 'popup' ? extPopupPath(ext) : extOptionsPath(ext);
+  const key = ext.id + ':' + which + ':' + (++extSeq);
+  window.__extChromes[key] = makeChrome(ext, which);
+  const html = path && pageHtml(ext, path, key);
+  if (!html) { toast(ext.name + ' has no ' + which + ' page'); return; }
+  runCleanups();
+  ext.msgL = ext.msgL.filter(l => l.ctx !== which);
+  backAction = () => openTool(EXT_ITEM);
+  mTitle.textContent = '🧩 ' + ext.name;
+  mBack.style.display = ''; mSearch.style.display = 'none';
+  mBody.innerHTML = '<iframe class="ext-frame"></iframe>';
+  mBody.firstChild.srcdoc = html;
+  overlay.classList.add('open');
+  onClose(() => { ext.msgL = ext.msgL.filter(l => l.ctx !== which); });
+}
+function stopBg(ext) {
+  if (ext.bg) { ext.bg.remove(); ext.bg = null; }
+  ext.msgL = ext.msgL.filter(l => l.ctx !== 'background');
+  ext.events = {};
+}
+function startBg(ext) {
+  stopBg(ext);
+  const bgc = ext.manifest.background;
+  if (!bgc) return;
+  const td = new TextDecoder(), key = ext.id + ':background:' + (++extSeq), clean = p => String(p).replace(/^\//, '');
+  window.__extChromes[key] = makeChrome(ext, 'background');
+  window.__extFileText = (id, p) => { const e = EXT.list.find(x => x.id === id), f = e && e.files[clean(p)]; return f ? td.decode(f.data) : ''; };
+  const scripts = bgc.scripts || (bgc.service_worker ? [bgc.service_worker] : []);
+  const head = '<script>window.chrome=window.browser=parent.__extChromes[' + JSON.stringify(key) + '];window.importScripts=function(){for(var i=0;i<arguments.length;i++)(0,eval)(parent.__extFileText(' + JSON.stringify(ext.id) + ',arguments[i]));};<\/script>';
+  let html;
+  if (bgc.page && ext.files[clean(bgc.page)]) html = pageHtml(ext, clean(bgc.page), key);
+  else html = '<!doctype html><html><head>' + head + '</head><body>' + scripts.map(p => { const f = ext.files[clean(p)]; return f ? '<script>' + td.decode(f.data).replace(/<\/script/gi, '<\\/script') + '<\/script>' : ''; }).join('') + '</body></html>';
+  const fr = document.createElement('iframe');
+  fr.style.display = 'none';
+  fr.srcdoc = html;
+  $('extBg').appendChild(fr);
+  ext.bg = fr;
+  const seen = 'proxy_ext_inst_' + ext.id, first = lsGet(seen, '') !== '1';
+  lsSet(seen, '1');
+  setTimeout(() => fire(ext, first ? 'runtime.onInstalled' : 'runtime.onStartup', first ? { reason: 'install' } : undefined), 300);
+}
+
+// ---- content scripts ----
+function matchesUrl(cs, url) {
+  const inc = (cs.matches || []).map(patRe).filter(Boolean), exc = (cs.exclude_matches || []).map(patRe).filter(Boolean);
+  return inc.some(r => r.test(url)) && !exc.some(r => r.test(url));
+}
+function injectExtensions() {
+  const url = realUrlOfFrame();
+  if (!url || !EXT.list.length) return;
+  let win; try { win = view.contentWindow; void win.document.documentElement; } catch (_) { return; }
+  const td = new TextDecoder();
+  EXT.list.filter(x => x.enabled).forEach(ext => {
+    ext.msgL = ext.msgL.filter(l => l.ctx !== 'content');
+    const css = [], js = [];
+    (ext.manifest.content_scripts || []).filter(cs => matchesUrl(cs, url)).forEach(cs => { (cs.css || []).forEach(p => css.push(p)); (cs.js || []).forEach(p => js.push(p)); });
+    if (!css.length && !js.length) return;
+    const doc = win.document;
+    css.forEach(p => { const f = ext.files[p.replace(/^\//, '')]; if (f) { const st = doc.createElement('style'); st.textContent = td.decode(f.data); (doc.head || doc.documentElement).appendChild(st); } });
+    const ch = makeChrome(ext, 'content');
+    js.forEach(p => {
+      const f = ext.files[p.replace(/^\//, '')];
+      if (!f) return;
+      try { win.Function('chrome', 'browser', td.decode(f.data)).call(win, ch, ch); } catch (e) { console.warn('[' + ext.name + '] ' + p, e); }
+    });
+  });
+}
+view.addEventListener('load', injectExtensions);
+view.addEventListener('load', () => { try { view.contentWindow.performance.setResourceTimingBufferSize(4000); } catch (_) {} });
+
+// ---- install / remove ----
+async function installExt(rawFiles, idHint) {
+  const files = normFiles(rawFiles);
+  const manifest = parseJsonLoose(new TextDecoder().decode(files['manifest.json'].data));
+  if (!manifest || !manifest.name) throw new Error('manifest.json has no name');
+  const id = idHint || 'local_' + hash32(String(manifest.name) + String(manifest.key || ''));
+  const rec = { id, manifest, files };
+  try { await dbPut(rec); } catch (_) { toast('Could not save it for next time, but it works until you reload'); }
+  const prev = EXT.list.findIndex(x => x.id === id);
+  if (prev > -1) { stopBg(EXT.list[prev]); EXT.list.splice(prev, 1); }
+  const ext = makeExt(rec);
+  EXT.list.push(ext);
+  if (ext.enabled) startBg(ext);
+  return ext;
+}
+function removeExt(ext) {
+  stopBg(ext);
+  EXT.list = EXT.list.filter(x => x !== ext);
+  dbDel(ext.id);
+  try { localStorage.removeItem('proxy_extstore_' + ext.id); localStorage.removeItem('proxy_ext_inst_' + ext.id); } catch (_) {}
+  const m = enabledMap(); delete m[ext.id]; lsSet('proxy_ext_enabled', JSON.stringify(m));
+}
+
+// ---- manager UI ----
+function toolExtensions(c) {
+  c.innerHTML = '<h3>Add an extension</h3>' +
+    '<div class="row"><button id="exFolder" type="button">📂 Load unpacked folder</button><button id="exZip" class="secondary" type="button">📦 Load .zip or .crx</button></div>' +
+    '<div class="row"><input type="text" id="exUrl" placeholder="Chrome Web Store link or extension ID" style="flex:1;min-width:200px"><button id="exAdd" type="button">Add</button></div>' +
+    '<div class="label" id="exMsg"></div>' +
+    '<h3>Installed</h3><div id="exList"></div>' +
+    '<p class="label">This is an emulation. Content scripts, popups, options pages, background scripts and storage work on pages opened in the Browse tab, and many Chrome APIs are stubs. Only add extensions you trust: their code runs with the same access as the pages you browse.</p>' +
+    '<input type="file" id="exFolderIn" webkitdirectory multiple hidden><input type="file" id="exZipIn" accept=".zip,.crx" hidden>';
+  const msg = (t, bad) => { const m = q1(c, '#exMsg'); m.textContent = t; m.style.color = bad ? '#ff6b6b' : ''; };
+  const list = q1(c, '#exList');
+  function render() {
+    list.innerHTML = '';
+    if (!EXT.list.length) { list.innerHTML = '<div class="label">No extensions yet.</div>'; return; }
+    EXT.list.forEach(ext => {
+      const row = document.createElement('div');
+      row.className = 'ext-item';
+      const icon = extIcon(ext), ic = document.createElement(icon ? 'img' : 'div');
+      ic.className = 'ext-ic';
+      if (icon) ic.src = icon; else ic.textContent = '🧩';
+      const meta = document.createElement('div');
+      meta.className = 'ext-meta';
+      const nm = document.createElement('b'); nm.textContent = ext.name + (ext.version ? '  v' + ext.version : '');
+      const ds = document.createElement('small'); ds.textContent = ext.description || ext.id;
+      meta.append(nm, ds);
+      const sw = document.createElement('label');
+      const cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = ext.enabled;
+      cb.addEventListener('change', () => { ext.enabled = cb.checked; setEnabled(ext.id, ext.enabled); if (ext.enabled) startBg(ext); else stopBg(ext); toast(ext.name + (ext.enabled ? ' enabled' : ' disabled')); });
+      sw.append(cb, 'On');
+      row.append(ic, meta, sw);
+      const add = (label, fn) => { const b = document.createElement('button'); b.type = 'button'; b.className = 'secondary'; b.textContent = label; b.addEventListener('click', fn); row.appendChild(b); };
+      if (extPopupPath(ext)) add('Popup', () => openExtPage(ext, 'popup'));
+      if (extOptionsPath(ext)) add('Options', () => openExtPage(ext, 'options'));
+      add('Remove', () => { removeExt(ext); render(); msg('Removed ' + ext.name); });
+      list.appendChild(row);
+    });
+  }
+  async function done(ext) { msg('Added ' + ext.name + '. It runs on pages you open in the Browse tab.'); render(); }
+  q1(c, '#exFolder').addEventListener('click', () => q1(c, '#exFolderIn').click());
+  q1(c, '#exZip').addEventListener('click', () => q1(c, '#exZipIn').click());
+  q1(c, '#exFolderIn').addEventListener('change', async e => {
+    const picked = [...e.target.files];
+    if (!picked.length) return;
+    msg('Reading ' + picked.length + ' files...');
+    try {
+      const files = {};
+      for (const f of picked) {
+        const rel = f.webkitRelativePath || f.name;
+        if (/(^|\/)(node_modules|\.git)\//.test(rel)) continue;
+        files[rel] = new Uint8Array(await f.arrayBuffer());
+      }
+      await done(await installExt(files));
+    } catch (err) { msg('Could not load that folder: ' + err.message, true); }
+    e.target.value = '';
+  });
+  q1(c, '#exZipIn').addEventListener('change', async e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    msg('Reading ' + file.name + '...');
+    try { await done(await installExt(await readZip(stripCrx(await file.arrayBuffer())))); }
+    catch (err) { msg('Could not load that file: ' + err.message, true); }
+    e.target.value = '';
+  });
+  async function addFromStore() {
+    const id = (q1(c, '#exUrl').value.match(/[a-p]{32}/g) || []).pop();
+    if (!id) { msg('Paste a Chrome Web Store link or the 32-letter extension ID.', true); return; }
+    msg('Downloading from the Chrome Web Store...');
+    try {
+      const r = await fetch('/crx?id=' + id, { cache: 'no-store' });
+      if (!r.ok) throw new Error((await r.text()) || 'download failed');
+      const buf = await r.arrayBuffer();
+      if (buf.byteLength < 100) throw new Error('that extension was not found or cannot be downloaded');
+      await done(await installExt(await readZip(stripCrx(buf)), id));
+    } catch (err) { msg('Could not add it: ' + err.message, true); }
+  }
+  q1(c, '#exAdd').addEventListener('click', addFromStore);
+  q1(c, '#exUrl').addEventListener('keydown', e => { if (e.key === 'Enter') addFromStore(); });
+  render();
+}
+const EXT_ITEM = SETTINGS.find(i => i[0] === 'Extensions');
+function openExtensions() { currentFolder = 'Settings'; overlay.classList.add('open'); openTool(EXT_ITEM); }
+$('extBtn').addEventListener('click', openExtensions);
+$('cExt').addEventListener('click', openExtensions);
+
+// load saved extensions on startup
+(async function () {
+  (await dbAll()).forEach(rec => { try { EXT.list.push(makeExt(rec)); } catch (e) { console.warn(e); } });
+  EXT.list.filter(x => x.enabled).forEach(startBg);
+})();
+
+// ================= HTML runner =================
+const STARTER = `<!DOCTYPE html>
+<html>
+<body style="font-family:sans-serif;text-align:center;padding:40px">
+  <h1>Hello!</h1>
+  <button onclick="this.textContent = 'Clicked ' + (++n) + 'x'">Click me</button>
+  <script>let n = 0;<\/script>
+</body>
+</html>`;
+function runCode() { out.srcdoc = code.value; }
+function loadFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => { code.value = reader.result; runCode(); };
+  reader.readAsText(file);
+}
+$('run').addEventListener('click', runCode);
+$('clear').addEventListener('click', () => { code.value = ''; out.srcdoc = ''; });
+$('open').addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', () => { loadFile(fileInput.files[0]); fileInput.value = ''; });
+$('save').addEventListener('click', () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([code.value], { type: 'text/html' }));
+  a.download = 'page.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+code.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); runCode(); }
+  if (e.key === 'Tab') { e.preventDefault(); code.setRangeText('  ', code.selectionStart, code.selectionEnd, 'end'); }
+});
+code.addEventListener('dragover', e => e.preventDefault());
+code.addEventListener('drop', e => { e.preventDefault(); loadFile(e.dataTransfer.files[0]); });
+code.value = STARTER;
+runCode();
+</script>
+</body>
+</html>
